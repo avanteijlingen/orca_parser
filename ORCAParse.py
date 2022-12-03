@@ -202,10 +202,12 @@ class ORCAParse:
         txt = self.raw.split("ABSORPTION SPECTRUM VIA TRANSITION ELECTRIC DIPOLE MOMENTS")[1]
         txt = txt.split("-----------------------------------------------------------------------------")[2]
         self.wavelengths = []
+        self.fosc = []
         for line in txt.split("\n"):
             line=line.split()
             if len(line) > 4:
                 self.wavelengths.append(float(line[2]))
+                self.fosc.append(float(line[3]))
         
     def __init__(self, fname, verbose = False):
         self.fname = fname
