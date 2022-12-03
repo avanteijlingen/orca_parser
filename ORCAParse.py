@@ -84,7 +84,7 @@ class ORCAParse:
             E_disp = splits[i].split("\n")[0].strip()
             self.dispersions[i] = float(E_disp)
         
-    def get_coords(self):
+    def parse_coords(self):
         self.coords = []
         self.atoms = []
         frames = self.raw.split("CARTESIAN COORDINATES (ANGSTROEM)")[1:]
@@ -111,7 +111,7 @@ class ORCAParse:
             distances[i] = d
         return distances
             
-    def get_freqs(self):
+    def parse_freqs(self):
         self.frequencies = []
         frames = self.raw.split("VIBRATIONAL FREQUENCIES")[1:]
         for i,frame in enumerate(frames):
@@ -152,7 +152,7 @@ class ORCAParse:
         seconds = seconds + (miliseconds/1000)
         return seconds
     
-    def get_input(self):
+    def parse_input(self):
         return self.raw.split("|  1>")[1].split("\n")[0]
     
     def convergence(self):
@@ -198,65 +198,6 @@ class ORCAParse:
 
     
 if __name__ == "__main__":
-    #fname = "K-DHP/TS/Insertion/ORCA_SCAN/Insertion_TS.out"
-    #fname = "K-DHP/TS/Insertion/ORCA_TS_fromDNN/DNN_Berny.out"
-    #fname = "K-DHP/TS/Deprotonation/ORCA_SCAN/Deprotonation_ScanTS.out"
-    
-    #files = glob.glob("K-DHP_impTHF/TS/Trapping_tBu.ENBA/TZVPP_D4/IRC_forward/IRC_op*.out")
-    #files = glob.glob("K-DHP_impTHF/TS/Hydride*/TZVPP_D4/*.out")
-    #files = glob.glob("K-DHP/TS/*/OtherTS/*.out")
-    #files = glob.glob("K-DHP/TS/*/ORCA_SCAN/*.out")
-    #files = glob.glob("K-DHP/Opt/*/*.out")
-    #files = glob.glob("K-DHP_impTHF/Opt/TZVPP_D4/KH/*.out")
-    #files = ["/users/rkb19187/Desktop/Roitberg/ScanTS_OptTS/K-DHP_impTHF/TS/Deprotonation_tBu/TZVPP_D4/IRC_forward/IRC_opt.out"]
-    #files = ["/users/rkb19187/Desktop/Roitberg/ScanTS_OptTS/Cs-DHP_impTHF/TS/Trapping_tBu.ENBA/TZVPP_D4/IRC_forward/IRC_opt.out"]
-    files = ["/users/rkb19187/Desktop/Roitberg/ScanTS_OptTS/K-DHP_impTHF/TS/SurrogateHydrideTransfer_tBu/TZVPP_D4/SurrogateHydrideTransfer_tBu.out"]
-    
-    print(files)
-    for TS_out in files:
-        print(TS_out)
-
-        op = ORCAParse(TS_out)
-        op.get_coords()
-        op.parse_energies()
-        print("op.valid:", op.valid)
-        #print("op.valid:", op.energies)
-        #plt.plot(op.r_energies, label=os.path.basename(TS_out))
-        #plt.show()
-        
-        
-        op.get_freqs()
-        freqs = op.frequencies[-1]
-        print("Negative Freqs:", np.where(freqs < 0)[0].shape[0])
-        
-        op.parse_free_energy()
-        print(op.Gibbs)
-        
-        print("CONVERGED:", op.CONVERGED)
-        
-        print(op.conv)
-        print(op.tol)
-        
-# =============================================================================
-#         fig, axs = plt.subplots(int(np.ceil(len(list(op.conv.keys())) / 2)),2)
-#         fig.suptitle('Vertically stacked subplots')
-#         for i,key in enumerate(list(op.conv.keys())):
-#             index = int(np.floor(i / 2))
-#             indey = i%2
-#             axs[index][indey].set_title(key)
-#             axs[index][indey].plot(op.conv[key])
-# =============================================================================
-
-    for key in list(op.conv.keys()):
-        if key in list(op.tol.keys()):
-            print(key)
-            
-            X = np.arange(len(op.conv[key]))
-            plt.plot(X, op.conv[key])
-            plt.plot(X, op.tol[key])
-            plt.title(key)
-            plt.show()
-        
-        
+    pass
 
         
