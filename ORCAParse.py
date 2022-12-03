@@ -137,6 +137,10 @@ class ORCAParse:
         
         self.AllGibbs = [float(x.split("\n")[0].strip().split()[0]) for x in self.raw.split("Final Gibbs free energy         ...")[1:]]
         self.Gibbs = float(self.raw.split("Final Gibbs free energy         ...")[-1].split("\n")[0].strip().split()[0])
+        self.entropies = [float(x.split("\n")[0].strip().split()[0]) for x in self.raw.split("Total enthalpy                    ...")[1:]]
+        self.enthalpies = [float(x.split("\n")[0].strip().split()[0]) for x in self.raw.split("Total entropy correction          ...")[1:]]
+        
+        
         
     def seconds(self):
         time_str = self.raw.split("TOTAL RUN TIME:")[1].strip().split()

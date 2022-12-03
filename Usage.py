@@ -36,4 +36,6 @@ Optimization.parse_free_energy()
 print("Meisenheimer Complex Gibbs free energy:", Optimization.Gibbs)
 Optimization.parse_freqs()
 print("Meisenheimer Complex Frequencies:", Optimization.frequencies)
+print("Meisenheimer Complex entropies:", Optimization.entropies)
+print("Meisenheimer Complex enthalpies:", Optimization.enthalpies)
 
