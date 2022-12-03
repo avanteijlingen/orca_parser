@@ -13,11 +13,18 @@ from ase.io import read
 # 1 Bohr = 0.52917724900001 Angstrom
 
 def readin(fname):
-    content = ""
-    with open(fname, 'rb') as f:
-        for line in f:
-            content = content + line.decode("utf-8", errors='ignore') + "\n"
-    return content
+    # ORCA sometimes makes output that is hard to parse, we will try to read it the quick way first
+    try:
+        f = open(fname)
+        content = f.read()
+        f.close()
+        return content
+    except:
+        content = ""
+        with open(fname, 'rb') as f:
+            for line in f:
+                content = content + line.decode("utf-8", errors='ignore') + "\n"
+        return content
 
 
 def fit_rms(ref_c,c):
@@ -191,14 +198,22 @@ class ORCAParse:
     
                 #print(line)
             
-    
+    def parse_absorption(self):
+        txt = self.raw.split("ABSORPTION SPECTRUM VIA TRANSITION ELECTRIC DIPOLE MOMENTS")[1]
+        txt = txt.split("-----------------------------------------------------------------------------")[2]
+        self.wavelengths = []
+        for line in txt.split("\n"):
+            line=line.split()
+            if len(line) > 4:
+                self.wavelengths.append(float(line[2]))
+        
     def __init__(self, fname, verbose = False):
         self.fname = fname
         self.verbose = verbose
         self.raw = readin(fname)
         self.ValidateOutput()
         self.convergence()
-
+        self.TDDFT = False
 
     
 if __name__ == "__main__":

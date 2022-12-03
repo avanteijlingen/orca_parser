@@ -25,17 +25,23 @@ Optimization.parse_energies()
 print("Energy at each step:", Optimization.energies)
 print("Energy at convergence:", Optimization.energies[-1], "Ha")
 
+TDDFT = ORCAParse("Test-cases/Phenol/TDDFT.out")
+
+TDDFT.parse_absorption()
+print("Wavelengths:", TDDFT.wavelengths)
 
 
-print("\n")
-print("Meisenheimer Complex")
-Optimization = ORCAParse("Test-cases/MeisenheimerComplex.out")
-Optimization.parse_dispersion()
-print("Meisenheimer Complex D4 energy:", Optimization.dispersions[-1])
-Optimization.parse_free_energy()
-print("Meisenheimer Complex Gibbs free energy:", Optimization.Gibbs)
-Optimization.parse_freqs()
-print("Meisenheimer Complex Frequencies:", Optimization.frequencies)
-print("Meisenheimer Complex entropies:", Optimization.entropies)
-print("Meisenheimer Complex enthalpies:", Optimization.enthalpies)
+# =============================================================================
+# print("\n")
+# print("Meisenheimer Complex")
+# Optimization = ORCAParse("Test-cases/MeisenheimerComplex.out")
+# Optimization.parse_dispersion()
+# print("Meisenheimer Complex D4 energy:", Optimization.dispersions[-1])
+# Optimization.parse_free_energy()
+# print("Meisenheimer Complex Gibbs free energy:", Optimization.Gibbs)
+# Optimization.parse_freqs()
+# print("Meisenheimer Complex Frequencies:", Optimization.frequencies)
+# print("Meisenheimer Complex entropies:", Optimization.entropies)
+# print("Meisenheimer Complex enthalpies:", Optimization.enthalpies)
+# =============================================================================
 
