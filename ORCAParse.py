@@ -14,11 +14,9 @@ from ase.io import read
 
 def readin(fname):
     content = ""
-    print(fname)
     with open(fname, 'rb') as f:
         for line in f:
-            content = content + line.decode(errors='ignore') + "\n"
-    
+            content = content + line.decode("utf-8", errors='ignore') + "\n"
     return content
 
 
@@ -78,10 +76,12 @@ class ORCAParse:
             self.energies = np.hstack((self.energies, [part]))
         #self.r_energies = self.energies - self.energies.min()
     def parse_dispersion(self):
-        splits = self.raw.split("Dispersion correction")[1:]
+        splits = self.raw.split("\nDispersion correction")[1:]
         self.dispersions = np.ndarray((len(splits),))
         for i in range(len(splits)):
             E_disp = splits[i].split("\n")[0].strip()
+            if "Starting D4" in E_disp: #Not a results line
+                continue
             self.dispersions[i] = float(E_disp)
         
     def parse_coords(self):
@@ -138,7 +138,7 @@ class ORCAParse:
         self.AllGibbs = [float(x.split("\n")[0].strip().split()[0]) for x in self.raw.split("Final Gibbs free energy         ...")[1:]]
         self.Gibbs = float(self.raw.split("Final Gibbs free energy         ...")[-1].split("\n")[0].strip().split()[0])
         
-    def time(self):
+    def seconds(self):
         time_str = self.raw.split("TOTAL RUN TIME:")[1].strip().split()
         days = int(time_str[0])
         hours = int(time_str[2])
