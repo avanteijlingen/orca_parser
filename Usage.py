@@ -8,7 +8,7 @@ Created on Sat Dec  3 13:59:58 2022
 from ORCAParse import *
 
 
-
+print("Phenol")
 Optimization = ORCAParse("Test-cases/Phenol/Opt.out")
 
 print("ORCA exited normally:", Optimization.valid)
@@ -27,7 +27,13 @@ print("Energy at convergence:", Optimization.energies[-1], "Ha")
 
 
 
-
+print("\n")
+print("Meisenheimer Complex")
 Optimization = ORCAParse("Test-cases/MeisenheimerComplex.out")
 Optimization.parse_dispersion()
 print("Meisenheimer Complex D4 energy:", Optimization.dispersions[-1])
+Optimization.parse_free_energy()
+print("Meisenheimer Complex Gibbs free energy:", Optimization.Gibbs)
+Optimization.parse_freqs()
+print("Meisenheimer Complex Frequencies:", Optimization.frequencies)
+
