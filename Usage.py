@@ -4,7 +4,7 @@ Created on Sat Dec  3 13:59:58 2022
 
 @author: avtei
 """
-
+import matplotlib.pyplot as plt
 from ORCAParse import *
 
 
@@ -29,7 +29,18 @@ TDDFT = ORCAParse("Test-cases/Phenol/TDDFT.out")
 
 TDDFT.parse_absorption()
 print("Wavelengths:", TDDFT.wavelengths)
-
+TDDFT.parse_CD()
+print("CD Wavelengths:", TDDFT.CD)
+X, Y = [],[]
+for nm,r in zip(TDDFT.CD, TDDFT.R):
+    X.append(nm)
+    Y.append(0)
+    X.append(nm)
+    Y.append(r)
+    X.append(nm)
+    Y.append(0)
+plt.plot(X, Y)
+plt.xlabel("Wavelength (nm)")
 
 print("\n")
 print("Meisenheimer Complex")

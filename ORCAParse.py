@@ -208,7 +208,19 @@ class ORCAParse:
             if len(line) > 4:
                 self.wavelengths.append(float(line[2]))
                 self.fosc.append(float(line[3]))
-        
+    
+    def parse_CD(self):
+        txt = self.raw.split("CD SPECTRUM")[1]
+        txt = txt.split("-------------------------------------------------------------------")[2]
+        self.CD = []
+        self.R = []
+        for line in txt.split("\n"):
+            line=line.split()
+            if len(line) > 4:
+                self.CD.append(float(line[2]))
+                self.R.append(float(line[3]))
+    
+    
     def __init__(self, fname, verbose = False):
         self.fname = fname
         self.verbose = verbose
