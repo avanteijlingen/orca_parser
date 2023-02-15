@@ -56,6 +56,15 @@ def calc_rmsd(c1, c2):
 
 class ORCAParse:
     def ValidateOutput(self):
+        if "TOTAL RUN TIME:" in self.raw:
+            self.time = self.raw.split("TOTAL RUN TIME:")[1]
+            T = self.time.strip().split()
+            self.time  = int(T[0]) * 24 *60 * 60
+            self.time += int(T[2]) * 60 * 60
+            self.time += int(T[4]) * 60
+            self.time += int(T[6]) 
+            self.time += int(T[8]) / 1000
+            
         if not "***ORCA TERMINATED NORMALLY***" in self.raw:
             if self.verbose:
                 print(self.fname, "orca did not terminate normally!")
