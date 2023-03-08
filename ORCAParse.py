@@ -143,6 +143,21 @@ class ORCAParse:
                 self.frequencies = np.array(frequencies).reshape(1, -1)
             else:
                 self.frequencies = np.vstack((self.frequencies, np.array(frequencies).reshape(1,-1)))
+    
+    def parse_IR(self):
+        self.IR = pandas.DataFrame(columns=['freq', 'eps', 'Int', 'T**2', 'TX', 'TY', 'TZ'])
+        ir = self.raw.split("IR SPECTRUM")[-1].split("--------------------------")[2]
+        for line in ir.split("\n"):
+            line = line.replace(":", "").replace("(", "").replace(")", "")
+            line=line.split()
+            if len(line) != 8:
+                continue
+            #print(len(line), line)
+            try:
+                self.IR.loc[line[0]] = [float(x) for x in line[1:]]
+            except ValueError:
+                pass
+        
     def parse_free_energy(self):
         if "out the resulting rotational entropy values for" in self.raw:
             symmetric_number = self.raw.split("Final Gibbs free energy         ...")[-2].split("out the resulting rotational entropy values for")[1]
