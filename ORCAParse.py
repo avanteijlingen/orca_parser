@@ -299,12 +299,14 @@ class HessianTools(ORCAParse):
                 basecol += 5
     def getSpectra(self):
         self.IR = pandas.DataFrame(columns="wavenumber eps Int TX TY TZ".split())
+        i = 0
         for line in self.content["ir_spectrum"].split("\n"):
             line=line.split()
             if len(line) < len(self.IR.columns):
                 continue
             line = [float(x) for x in line]
-            self.IR.loc[line[0]] = line
+            self.IR.loc[i] = line
+            i+=1
     def WriteMode(self, fname, mode, steps=10, amplitude=3):
         self.mol.write(fname, append=False)
         disp = self.mol.copy()
