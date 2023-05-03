@@ -307,7 +307,7 @@ class HessianTools(ORCAParse):
             line = [float(x) for x in line]
             self.IR.loc[i] = line
             i+=1
-    def WriteMode(self, fname, mode, steps=10, amplitude=3):
+    def WriteMode(self, fname, mode, steps=10, amplitude=1):
         self.mol.write(fname, append=False)
         disp = self.mol.copy()
         #yield steps < 1
