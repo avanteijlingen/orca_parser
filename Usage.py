@@ -6,6 +6,20 @@ Created on Sat Dec  3 13:59:58 2022
 """
 import matplotlib.pyplot as plt
 from ORCAParse import *
+import io
+import ase
+
+
+
+
+
+#Hess = HessianTools("Test-cases/COO/COO.hess")
+Hess = HessianTools("Test-cases/Coordination_0.hess")
+#print(Hess.normalmodes)
+#Hess.normalmodes.to_csv("Test.csv")
+print(Hess.IR.iloc[20])
+Hess.WriteMode("NormalMode_20.xyz", 20, steps=50)
+
 
 
 print("Phenol")
@@ -53,4 +67,5 @@ Optimization.parse_freqs()
 print("Meisenheimer Complex Frequencies:", Optimization.frequencies)
 print("Meisenheimer Complex entropies:", Optimization.entropies)
 print("Meisenheimer Complex enthalpies:", Optimization.enthalpies)
+
 
