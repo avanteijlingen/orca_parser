@@ -279,7 +279,8 @@ class HessianTools(ORCAParse):
     def getNormalModes(self):
         basecol = 0
         self.Nnormalmodes = self.Natoms = int(self.content["normal_modes"].split("\n")[0].split()[0])
-        self.normalmodes = pandas.DataFrame()
+        #self.normalmodes = pandas.DataFrame()
+        self.normalmodes = np.ones((self.Nnormalmodes, self.Nnormalmodes))
         for line in self.content["normal_modes"].split("\n"):
             if line[0] == "#":
                 continue
@@ -293,10 +294,11 @@ class HessianTools(ORCAParse):
             row = int(line[0])
             #print(row, basecol, line)
             for col in range(0, len(line[1:])):
-                self.normalmodes.at[row, col+basecol] = float(line[col+1])*0.52917724900001 # Bohr -> Angstrom
+                self.normalmodes[row, col+basecol] = float(line[col+1])*0.52917724900001 # Bohr -> Angstrom
             
             if row == self.Nnormalmodes-1:
                 basecol += 5
+        self.normalmodes = pandas.DataFrame(self.normalmodes)
     def getSpectra(self):
         self.IR = pandas.DataFrame(columns="wavenumber eps Int TX TY TZ".split())
         i = 0
@@ -331,6 +333,7 @@ class HessianTools(ORCAParse):
         
         
 if __name__ == "__main__":
-    pass
+    Hess = HessianTools("Test-cases/Coo/Coo.hess")
+    print(Hess.normalmodes)
 
         
