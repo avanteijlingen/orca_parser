@@ -4,15 +4,14 @@ setup(
     name='orca_parser',
     version='0.1.0',    
     description='A module for parse ORCA output files including hessians (.hess) files',
-    url='https://github.com/beck-vant/pyModelMoleDatabase',
+    url='https://github.com/avanteijlingen/ORCA-Parser',
     author='Alexander van Teijlingen',
     author_email='a.vant@linuxmail.org',
     license='Only for use within ModelMole LTD',
-    packages=['pyModelMoleDatabase'],
-    install_requires=['redis',
-                      'pony',
-                      'python-dotenv',
-                      'pymysql'
+    packages=['orca_parser'],
+    install_requires=['ase',
+                      'pandas',
+                      'numpy',
                       ],
 
     classifiers=[

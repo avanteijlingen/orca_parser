@@ -6,7 +6,6 @@ Created on Wed Feb  9 17:42:17 2022
 """
 import numpy as np
 import os, glob, sys, pandas, ase
-import matplotlib.pyplot as plt
 
 
 # import submodules
