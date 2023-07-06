@@ -13,14 +13,3 @@ from orca_parser.ORCAParse import *
 from orca_parser.HessianTools import *
 
 # 1 Bohr = 0.52917724900001 Angstrom
-
-
-
-
-        
-        
-if __name__ == "__main__":
-    Hess = HessianTools("Test-cases/Coo/Coo.hess")
-    print(Hess.normalmodes)
-
-        

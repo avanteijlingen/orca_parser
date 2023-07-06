@@ -6,7 +6,6 @@ Created on Sat Dec  3 13:59:58 2022
 """
 import matplotlib.pyplot as plt
 from orca_parser import *
-import io
 import ase
 
 
