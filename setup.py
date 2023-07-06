@@ -2,12 +2,12 @@ from setuptools import setup
 
 setup(
     name='orca_parser',
-    version='0.1.0',    
+    version='0.1.1',    
     description='A module for parse ORCA output files including hessians (.hess) files',
     url='https://github.com/avanteijlingen/ORCA-Parser',
     author='Alexander van Teijlingen',
     author_email='a.vant@linuxmail.org',
-    license='Only for use within ModelMole LTD',
+    license='BSD 2-clause',
     packages=['orca_parser'],
     install_requires=['ase',
                       'pandas',
