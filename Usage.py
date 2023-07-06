@@ -26,7 +26,7 @@ print("Job took:", Optimization.seconds(), "seconds")
 print("Job input line:", Optimization.parse_input())
 
 Optimization.parse_coords()
-print("Atomss:", Optimization.atoms)
+print("Atoms:", Optimization.atoms)
 print("Final coordinates:")
 print(Optimization.coords[-1])
 

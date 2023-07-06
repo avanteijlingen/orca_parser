@@ -1,6 +1,25 @@
 # ORCA-Parser
 A python module to parse data out of ORCA output files
 
+This module is availible at: https://pypi.org/project/orca-parser/
+and can be installed *via* pip install orca-parser
+
+The module use as:
+```
+import orca_parser
+Optimization = orca_parser.ORCAParse("Test-cases/Phenol/Opt.out")
+
+print("ORCA exited normally:", Optimization.valid)
+print("Job took:", Optimization.seconds(), "seconds")
+print("Job input line:", Optimization.parse_input())
+
+Optimization.parse_coords()
+print("Atoms:", Optimization.atoms)
+print("Final coordinates:")
+print(Optimization.coords[-1])
+```
+
+
 ### Requirements:
 [ase](https://gitlab.com/ase/ase), numpy, pandas
 
