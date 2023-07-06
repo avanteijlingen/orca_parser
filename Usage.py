@@ -5,12 +5,9 @@ Created on Sat Dec  3 13:59:58 2022
 @author: avtei
 """
 import matplotlib.pyplot as plt
-from ORCAParse import *
+from orca_parser import *
 import io
 import ase
-
-
-
 
 
 #Hess = HessianTools("Test-cases/COO/COO.hess")
