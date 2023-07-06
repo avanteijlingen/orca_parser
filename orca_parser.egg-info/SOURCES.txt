@@ -1,0 +1,11 @@
+LICENSE
+README.md
+setup.py
+orca_parser/HessianTools.py
+orca_parser/ORCAParse.py
+orca_parser/__init__.py
+orca_parser.egg-info/PKG-INFO
+orca_parser.egg-info/SOURCES.txt
+orca_parser.egg-info/dependency_links.txt
+orca_parser.egg-info/requires.txt
+orca_parser.egg-info/top_level.txt
