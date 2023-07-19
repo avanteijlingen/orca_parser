@@ -72,5 +72,5 @@ notconv.parse_energies()
 print(notconv.energies.shape[0])
 if any(notconv.energy_warnings):
     print("Unconverged energies found, removing them")
-print(notconv.energies[notconv.energy_warnings].shape[0])
+print(notconv.energies[~notconv.energy_warnings].shape[0])
 
