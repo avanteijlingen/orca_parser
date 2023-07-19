@@ -65,3 +65,12 @@ print("Meisenheimer Complex entropies:", Optimization.entropies)
 print("Meisenheimer Complex enthalpies:", Optimization.enthalpies)
 
 
+
+### We can use energy warnings to check for things like a wavefunction not being fully converged:
+notconv = ORCAParse("Test-cases/cpcm_opt.out")
+notconv.parse_energies()
+print(notconv.energies.shape[0])
+if any(notconv.energy_warnings):
+    print("Unconverged energies found, removing them")
+print(notconv.energies[notconv.energy_warnings].shape[0])
+

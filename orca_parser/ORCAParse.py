@@ -83,8 +83,15 @@ class ORCAParse:
     
     def parse_energies(self):
         self.energies = np.ndarray((0,), np.float64)
+        self.energy_warnings = np.ndarray((0,), np.bool_)
         for part in self.raw.split("FINAL SINGLE POINT ENERGY")[1:]:
-            part = float(part.split("\n")[0].strip())
+            part = part.split("\n")[0].strip()
+            if "(Wavefunction not fully converged!)" in part:
+                part = part.split()[0]
+                self.energy_warnings = np.hstack((self.energy_warnings, [False]))
+            else:
+                self.energy_warnings = np.hstack((self.energy_warnings, [True]))
+            part = float(part)
             self.energies = np.hstack((self.energies, [part]))
         #self.r_energies = self.energies - self.energies.min()
     def parse_dispersion(self):
