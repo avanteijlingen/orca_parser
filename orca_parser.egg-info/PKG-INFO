@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: orca-parser
-Version: 0.1.1
+Version: 0.1.2
 Summary: A module for parse ORCA output files including hessians (.hess) files
 Home-page: https://github.com/avanteijlingen/ORCA-Parser
 Author: Alexander van Teijlingen
