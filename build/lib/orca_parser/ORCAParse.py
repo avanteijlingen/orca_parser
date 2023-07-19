@@ -88,9 +88,9 @@ class ORCAParse:
             part = part.split("\n")[0].strip()
             if "(Wavefunction not fully converged!)" in part:
                 part = part.split()[0]
-                self.energy_warnings = np.hstack((self.energy_warnings, [False]))
-            else:
                 self.energy_warnings = np.hstack((self.energy_warnings, [True]))
+            else:
+                self.energy_warnings = np.hstack((self.energy_warnings, [False]))
             part = float(part)
             self.energies = np.hstack((self.energies, [part]))
         #self.r_energies = self.energies - self.energies.min()
