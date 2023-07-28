@@ -25,6 +25,8 @@ print("ORCA exited normally:", Optimization.valid)
 print("Job took:", Optimization.seconds(), "seconds")
 print("Job input line:", Optimization.parse_input())
 
+
+
 Optimization.parse_coords()
 print("Atoms:", Optimization.atoms)
 print("Final coordinates:")
