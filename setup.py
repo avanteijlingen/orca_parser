@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='orca_parser',
-    version='0.1.4',    
+    version='0.1.5',    
     description='A module for parse ORCA output files including hessians (.hess) files',
     url='https://github.com/avanteijlingen/ORCA-Parser',
     author='Alexander van Teijlingen',
