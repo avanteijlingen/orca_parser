@@ -196,7 +196,6 @@ class ORCAParse:
         self.orca_version = self.raw.split("Program Version ")[1].split()[0]
         inp = self.raw.split("|  1>")[1].split("\n")[0]
         inp = inp.upper()
-        print(inp)
         inp = inp.replace("!", "")
         inp = inp.split()
         inp_dict = {"Job": None, 
