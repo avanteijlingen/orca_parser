@@ -5,7 +5,7 @@ Created on Thu Jul  6 10:37:13 2023
 @author: Alex
 """
 import numpy as np
-import ase
+import ase, pandas
 from ase.io import read
 
 def readin(fname):
@@ -191,7 +191,59 @@ class ORCAParse:
         return seconds
     
     def parse_input(self):
-        return self.raw.split("|  1>")[1].split("\n")[0]
+        self.Z = int(round(float(self.raw.split("Sum of atomic charges:")[1].split("\n")[0])))
+        self.Multiplicity = int(round(float(self.raw.split("* xyz")[1].split("\n")[0].split()[1])))
+        inp = self.raw.split("|  1>")[1].split("\n")[0]
+        inp = inp.upper()
+        print(inp)
+        inp = inp.replace("!", "")
+        inp = inp.split()
+        inp_dict = {"Job": None, 
+                    "Freq": False,
+                    "Solvation": "Gas",
+                    "Dispersion": None,
+                    "Charge": self.Z,
+                    "defgrid": None,
+                    "def2/J": None,
+                    "Multiplicity": self.Multiplicity}
+        i = 0
+        while i < len(inp):
+            if inp[i] in ["SP", "OPT"]:
+                inp_dict["Job"] = inp[i]
+                del inp[i]
+                continue
+            elif "FREQ" in inp[i]:
+                inp_dict["Freq"] = True
+                del inp[i]
+                continue
+            elif inp[i] in ["B3LYP", "PBE"] or "WB9" in inp[i]:
+                inp_dict["Functional"] = inp[i]
+                del inp[i]
+                continue
+            elif "CPCM" in inp[i] or "SMD" in inp[i]:
+                inp_dict["Solvation"] = inp[i]
+                del inp[i]
+                continue
+            elif "DEF2-" in inp[i] or "SVP" in inp[i] or "VP" in inp[i]:
+                inp_dict["BasisSet"] = inp[i]
+                del inp[i]
+                continue
+            elif "D3" in inp[i] or "D3BJ" in inp[i] or "D4" in inp[i]:
+                inp_dict["Dispersion"] = inp[i]
+                del inp[i]
+                continue
+            elif "DEFGRID" in inp[i]:
+                inp_dict["defgrid"] = inp[i]
+                del inp[i]
+                continue
+            elif "DEF2/J" in inp[i]:
+                inp_dict["def2/J"] = True
+                del inp[i]
+                continue
+            
+            
+            i+= 1
+        return inp_dict
     
     def convergence(self):
         self.conv = dict()
