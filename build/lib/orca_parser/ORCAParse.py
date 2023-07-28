@@ -192,7 +192,7 @@ class ORCAParse:
     
     def parse_input(self):
         self.Z = int(round(float(self.raw.split("Sum of atomic charges:")[1].split("\n")[0])))
-        self.Multiplicity = int(round(float(self.raw.split("* xyz")[1].split("\n")[0].split()[1])))
+        self.Multiplicity = int(round(float(self.raw.split("* xyz")[1].replace("file","").split("\n")[0].split()[1])))
         self.orca_version = self.raw.split("Program Version ")[1].split()[0]
         inp = self.raw.split("|  1>")[1].split("\n")[0]
         inp = inp.upper()
@@ -242,8 +242,6 @@ class ORCAParse:
                 inp_dict["def2/J"] = True
                 del inp[i]
                 continue
-            
-            
             i+= 1
         return inp_dict
     
