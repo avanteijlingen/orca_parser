@@ -194,7 +194,8 @@ class ORCAParse:
         self.Z = int(round(float(self.raw.split("Sum of atomic charges:")[1].split("\n")[0])))
         self.Multiplicity = int(round(float(self.raw.split("* xyz")[1].replace("file","").split("\n")[0].split()[1])))
         self.orca_version = self.raw.split("Program Version ")[1].split()[0]
-        inp = self.raw.split("|  1>")[1].split("\n")[0]
+        inp = self.raw.split("INPUT FILE")[1].split("****END OF INPUT****")[0]
+        inp = inp.split("> !")[1].split("\n")[0]
         inp = inp.upper()
         inp = inp.replace("!", "")
         inp = inp.split()
@@ -209,6 +210,7 @@ class ORCAParse:
                     "orca_version": self.orca_version}
         i = 0
         while i < len(inp):
+            inp[i] = inp[i].upper()
             if inp[i] in ["SP", "OPT"]:
                 inp_dict["Job"] = inp[i]
                 del inp[i]
