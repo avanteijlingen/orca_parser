@@ -6,8 +6,15 @@ Created on Sat Dec  3 13:59:58 2022
 """
 import matplotlib.pyplot as plt
 from orca_parser import *
-import ase
+import ase, sys
 
+
+print("IrMe")
+IrMe = ORCAParse("Test-cases/IrMe.out")
+
+print(IrMe.parse_input())
+
+sys.exit()
 
 #Hess = HessianTools("Test-cases/COO/COO.hess")
 Hess = HessianTools("Test-cases/Coordination_0.hess")
