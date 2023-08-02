@@ -267,7 +267,7 @@ class ORCAParse:
                 del inp[i]
                 continue
             elif "SLOWCONV" in inp[i]:
-                inp_dict["SLOWCONV"] = inp[i]
+                inp_dict["SlowConv"] = inp[i]
                 del inp[i]
                 continue
             elif "SCF" in inp[i]:
