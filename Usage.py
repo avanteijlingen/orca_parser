@@ -9,10 +9,18 @@ from orca_parser import *
 import ase, sys
 
 
-print("IrMe")
-IrMe = ORCAParse("Test-cases/IrMe.out")
+print("H2O")
+H2O = ORCAParse("Test-cases/H2O.out")
 
-print(IrMe.parse_input())
+print(H2O.parse_input())
+
+H2O.parse_energies()
+H2O.parse_free_energy()
+
+print(H2O.energies)
+print(H2O.AllGibbs)
+print(H2O.entropies)
+print(H2O.enthalpies)
 
 sys.exit()
 
