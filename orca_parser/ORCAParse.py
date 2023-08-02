@@ -7,20 +7,18 @@ Created on Thu Jul  6 10:37:13 2023
 import numpy as np
 import ase, pandas
 from ase.io import read
+import charset
 
 def readin(fname):
-    # ORCA sometimes makes output that is hard to parse, we will try to read it the quick way first
+    # Frist try a linux / archie output
     try:
-        f = open(fname)
-        content = f.read()
-        f.close()
-        return content
+        with open(fname, "r", encoding="utf-8") as f:
+            content = f.read()
     except:
-        content = ""
-        with open(fname, 'rb') as f:
-            for line in f:
-                content = content + line.decode("utf-8", errors='ignore') + "\n"
-        return content
+        # next try a winwdows 10/11 encoding
+        with open(fname, "r", encoding="utf-16") as f:
+            content = f.read()        
+    return content
 
 
 def fit_rms(ref_c,c):
@@ -222,7 +220,7 @@ class ORCAParse:
                 inp_dict["Freq"] = True
                 del inp[i]
                 continue
-            elif inp[i] in ["B3LYP", "PBE"] or "WB9" in inp[i]:
+            elif inp[i] in ["B3LYP", "PBE"] or "WB9" in inp[i] or inp[i][:2] == "HF":
                 inp_dict["Functional"] = inp[i]
                 del inp[i]
                 continue
