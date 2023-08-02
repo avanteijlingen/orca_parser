@@ -177,18 +177,17 @@ class ORCAParse:
         frames = self.raw.split("GEOMETRY OPTIMIZATION CYCLE")
         
         self.AllGibbs = {}
+        self.entropies = {}
+        self.enthalpies = {}
         for i, frame in enumerate(frames):
-            print("FrameL", i)
             if "Final Gibbs free energy" in frame:
-                G = frame.split("Final Gibbs free energy         ...")[1:].split("\n")[0]
-                print(f"G = {G}")
-                
-            #[float(x.split("\n")[0].strip().split()[0]) for x in self.raw.]
-            
-        #self.AllGibbs = [float(x.split("\n")[0].strip().split()[0]) for x in self.raw.split("Final Gibbs free energy         ...")[1:]]
-        #self.Gibbs = float(self.raw.split("Final Gibbs free energy         ...")[-1].split("\n")[0].strip().split()[0])
-        #self.entropies = [float(x.split("\n")[0].strip().split()[0]) for x in self.raw.split("Total enthalpy                    ...")[1:]]
-        #self.enthalpies = [float(x.split("\n")[0].strip().split()[0]) for x in self.raw.split("Total entropy correction          ...")[1:]]
+                G = frame.split("Final Gibbs free energy         ...")[1].split("Eh")[0]
+                H = frame.split("Total enthalpy                    ...")[1].split("Eh")[0]
+                S = frame.split("Total entropy correction          ...")[1].split("Eh")[0]
+                self.AllGibbs[i] = float(G)
+                self.enthalpies[i] = float(H)
+                self.entropies[i] = float(S)
+        self.Gibbs = list(self.AllGibbs.values())[-1]
         
         
         
@@ -216,17 +215,19 @@ class ORCAParse:
         inp = inp.replace("!", "")
         inp = inp.split()
         inp_dict = {"Job": None, 
+                    "Functional": None, 
+                    "BasisSet": None, 
                     "Freq": False,
                     "Solvation": "Gas",
                     "Dispersion": None,
                     "Charge": self.Z,
                     "defgrid": "DEFGRID2", #default in orca 5
-                    "def2/J": None,
+                    "def2J": None,
                     "RIJCOSX": None,
                     "SlowConv": None,
                     "SCF_conv_tol": None,
                     "Multiplicity": self.Multiplicity,
-                    "orca_version": self.orca_version}
+                    "version": self.orca_version}
         i = 0
         while i < len(inp):
             inp[i] = inp[i].upper()
@@ -241,6 +242,9 @@ class ORCAParse:
             elif inp[i] in ["B3LYP", "PBE"] or "WB9" in inp[i] or inp[i][:2] == "HF":
                 inp_dict["Functional"] = inp[i]
                 del inp[i]
+                if inp_dict["Functional"] == "HF-3C":
+                    inp_dict["BasisSet"] = "MINIX"
+                    inp_dict["Dispersion"] = "D3BJ"
                 continue
             elif "CPCM" in inp[i] or "SMD" in inp[i]:
                 inp_dict["Solvation"] = inp[i]
@@ -259,7 +263,7 @@ class ORCAParse:
                 del inp[i]
                 continue
             elif "DEF2/J" in inp[i]:
-                inp_dict["def2/J"] = True
+                inp_dict["def2J"] = True
                 del inp[i]
                 continue
             elif inp[i] == "RIJCOSX":
