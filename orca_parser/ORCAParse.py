@@ -222,10 +222,6 @@ class ORCAParse:
                     "Dispersion": None,
                     "Charge": self.Z,
                     "defgrid": "DEFGRID2", #default in orca 5
-                    "def2J": None,
-                    "RIJCOSX": None,
-                    "SlowConv": None,
-                    "SCF_conv_tol": None,
                     "Multiplicity": self.Multiplicity,
                     "version": self.orca_version}
         i = 0
