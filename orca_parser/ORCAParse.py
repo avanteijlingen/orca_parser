@@ -204,8 +204,11 @@ class ORCAParse:
                     "Solvation": "Gas",
                     "Dispersion": None,
                     "Charge": self.Z,
-                    "defgrid": None,
+                    "defgrid": "DEFGRID2", #default in orca 5
                     "def2/J": None,
+                    "RIJCOSX": None,
+                    "SlowConv": None,
+                    "SCF_conv_tol": None,
                     "Multiplicity": self.Multiplicity,
                     "orca_version": self.orca_version}
         i = 0
@@ -241,6 +244,18 @@ class ORCAParse:
                 continue
             elif "DEF2/J" in inp[i]:
                 inp_dict["def2/J"] = True
+                del inp[i]
+                continue
+            elif inp[i] == "RIJCOSX":
+                inp_dict["RIJCOSX"] = True
+                del inp[i]
+                continue
+            elif "SLOWCONV" in inp[i]:
+                inp_dict["SLOWCONV"] = inp[i]
+                del inp[i]
+                continue
+            elif "SCF" in inp[i]:
+                inp_dict["SCF_conv_tol"] = inp[i]
                 del inp[i]
                 continue
             i+= 1
