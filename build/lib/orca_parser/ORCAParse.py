@@ -8,20 +8,24 @@ import numpy as np
 import ase, pandas
 from ase.io import read
 
-def readin(fname):
-    # ORCA sometimes makes output that is hard to parse, we will try to read it the quick way first
-    try:
-        f = open(fname)
-        content = f.read()
-        f.close()
-        return content
-    except:
-        content = ""
-        with open(fname, 'rb') as f:
-            for line in f:
-                content = content + line.decode("utf-8", errors='ignore') + "\n"
-        return content
 
+
+def tricky_readin(fname):
+    # Frist try a linux / archie output
+    try:
+        with open(fname, "rb") as f:
+            content = f.read().decode("utf-8")
+        #print("Encoded as UTF-8")
+    except:
+        # next try a winwdows 10/11 encoding
+        try:    
+            with open(fname, "rb") as f:
+                content = f.read().decode("utf-16")        
+            #print("Encoded as UTF-16")
+        except:
+            content = "Couldnt decode output file as utf-8 or utf-16"
+            print(content)
+    return content
 
 def fit_rms(ref_c,c):
     # move geometric center to the origin
@@ -204,8 +208,11 @@ class ORCAParse:
                     "Solvation": "Gas",
                     "Dispersion": None,
                     "Charge": self.Z,
-                    "defgrid": None,
+                    "defgrid": "DEFGRID2", #default in orca 5
                     "def2/J": None,
+                    "RIJCOSX": None,
+                    "SlowConv": None,
+                    "SCF_conv_tol": None,
                     "Multiplicity": self.Multiplicity,
                     "orca_version": self.orca_version}
         i = 0
@@ -219,7 +226,7 @@ class ORCAParse:
                 inp_dict["Freq"] = True
                 del inp[i]
                 continue
-            elif inp[i] in ["B3LYP", "PBE"] or "WB9" in inp[i]:
+            elif inp[i] in ["B3LYP", "PBE"] or "WB9" in inp[i] or inp[i][:2] == "HF":
                 inp_dict["Functional"] = inp[i]
                 del inp[i]
                 continue
@@ -241,6 +248,18 @@ class ORCAParse:
                 continue
             elif "DEF2/J" in inp[i]:
                 inp_dict["def2/J"] = True
+                del inp[i]
+                continue
+            elif inp[i] == "RIJCOSX":
+                inp_dict["RIJCOSX"] = True
+                del inp[i]
+                continue
+            elif "SLOWCONV" in inp[i]:
+                inp_dict["SLOWCONV"] = inp[i]
+                del inp[i]
+                continue
+            elif "SCF" in inp[i]:
+                inp_dict["SCF_conv_tol"] = inp[i]
                 del inp[i]
                 continue
             i+= 1
@@ -304,7 +323,7 @@ class ORCAParse:
     def __init__(self, fname, verbose = False):
         self.fname = fname
         self.verbose = verbose
-        self.raw = readin(fname)
+        self.raw = tricky_readin(fname)
         self.ValidateOutput()
         self.convergence()
         self.TDDFT = False

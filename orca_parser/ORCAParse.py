@@ -7,19 +7,25 @@ Created on Thu Jul  6 10:37:13 2023
 import numpy as np
 import ase, pandas
 from ase.io import read
-import charset
 
-def readin(fname):
+
+
+def tricky_readin(fname):
     # Frist try a linux / archie output
     try:
-        with open(fname, "r", encoding="utf-8") as f:
-            content = f.read()
+        with open(fname, "rb") as f:
+            content = f.read().decode("utf-8")
+        #print("Encoded as UTF-8")
     except:
         # next try a winwdows 10/11 encoding
-        with open(fname, "r", encoding="utf-16") as f:
-            content = f.read()        
+        try:    
+            with open(fname, "rb") as f:
+                content = f.read().decode("utf-16")        
+            #print("Encoded as UTF-16")
+        except:
+            content = "Couldnt decode output file as utf-8 or utf-16"
+            print(content)
     return content
-
 
 def fit_rms(ref_c,c):
     # move geometric center to the origin
@@ -317,7 +323,7 @@ class ORCAParse:
     def __init__(self, fname, verbose = False):
         self.fname = fname
         self.verbose = verbose
-        self.raw = readin(fname)
+        self.raw = tricky_readin(fname)
         self.ValidateOutput()
         self.convergence()
         self.TDDFT = False
