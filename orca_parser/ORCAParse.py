@@ -206,8 +206,8 @@ class ORCAParse:
         return seconds
     
     def parse_input(self):
-        self.Z = int(round(float(self.raw.split("Sum of atomic charges")[1].split("\n")[0].replace(":", ""))))
-        self.Multiplicity = int(round(float(self.raw.split("* xyz")[1].replace("file","").split("\n")[0].split()[1])))
+        self.Z = int(self.raw.split("Total Charge           Charge          ....")[1].split("\n"))
+        self.Multiplicity = int(self.raw.split("Multiplicity           Mult            ....")[1].split("\n"))
         self.orca_version = self.raw.split("Program Version ")[1].split()[0]
         inp = self.raw.split("INPUT FILE")[1].split("****END OF INPUT****")[0]
         inp = inp.split("> !")[1].split("\n")[0]
