@@ -11,8 +11,36 @@ import ase, sys
 
 print("H2O")
 H2O = ORCAParse("Test-cases/H2O.out")
-
+assert H2O.valid, "This file is invalid"
 print(H2O.parse_input())
+
+
+print("Phenol")
+Phenol = ORCAParse("Test-cases/Phenol/Opt.out")
+print(Phenol.parse_input())
+
+print("carbene CPCM_OPT")
+CPCM_OPT = ORCAParse("Test-cases/cpcm_opt.out")
+assert CPCM_OPT.valid, "This file is invalid"
+print(CPCM_OPT.parse_input())
+
+print("carbene gas-SP")
+gas_SP = ORCAParse("Test-cases/gasSP-3.out")
+assert gas_SP.valid, "This file is invalid"
+print(gas_SP.parse_input())
+
+print("Cl2")
+Cl2 = ORCAParse("Test-cases/Cl2.out")
+assert Cl2.valid, "This file is invalid"
+print(Cl2.parse_input())
+
+print("Coordination_0")
+Coordination_0 = ORCAParse("Test-cases/Coordination_0.out")
+assert Coordination_0.valid, "This file is invalid"
+print(Coordination_0.parse_input())
+
+
+sys.exit()
 
 H2O.parse_energies()
 H2O.parse_free_energy()

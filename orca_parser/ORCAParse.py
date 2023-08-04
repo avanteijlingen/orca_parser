@@ -22,6 +22,9 @@ def tricky_readin(fname):
             with open(fname, "rb") as f:
                 content = f.read().decode("utf-16")        
             #print("Encoded as UTF-16")
+            #Need to change \r\n to \n
+            content = content.replace("\r\n", "\n")
+            content = content.replace("\r", "")
         except:
             content = "Couldnt decode output file as utf-8 or utf-16"
             print(content)
@@ -75,7 +78,10 @@ class ORCAParse:
             self.valid = False
         else:
             self.valid = True
-
+        
+        if "this file is used internally by ORCA" in self.raw:
+            self.valid = False
+            
         if "THE OPTIMIZATION HAS CONVERGED" in self.raw:  
             self.CONVERGED = True
         else:
@@ -206,77 +212,83 @@ class ORCAParse:
         return seconds
     
     def parse_input(self):
-        self.Z = int(self.raw.split("Total Charge           Charge          ....")[1].split("\n"))
-        self.Multiplicity = int(self.raw.split("Multiplicity           Mult            ....")[1].split("\n"))
+        self.Z = int(self.raw.split("Total Charge           Charge          ....")[1].split("\n")[0])
+        self.Multiplicity = int(self.raw.split("Multiplicity           Mult            ....")[1].split("\n")[0])
         self.orca_version = self.raw.split("Program Version ")[1].split()[0]
         inp = self.raw.split("INPUT FILE")[1].split("****END OF INPUT****")[0]
         inp = inp.split("> !")[1].split("\n")[0]
         inp = inp.upper()
         inp = inp.replace("!", "")
-        inp = inp.split()
-        inp_dict = {"Job": None, 
-                    "Functional": None, 
-                    "BasisSet": None, 
-                    "Freq": False,
+        inp_dict = {"Job": "OPT" if "Geometry Optimization Run" in self.raw else "SP", 
+                    "BasisSet": self.raw.split("Your calculation utilizes the basis:")[1].split("\n")[0].replace(",", "").rstrip().replace(" ", ""), 
+                    "Freq": "VIBRATIONAL FREQUENCIES" in self.raw,
+                    "RIJCOSX" : "RIJ-COSX (HFX calculated with COS-X)).... on" in self.raw,
+                    "def2J": "Your calculation utilizes the auxiliary basis: def2/J" in self.raw,
                     "Solvation": "Gas",
-                    "Dispersion": None,
                     "Charge": self.Z,
-                    "defgrid": "DEFGRID2", #default in orca 5
                     "Multiplicity": self.Multiplicity,
-                    "version": self.orca_version}
-        i = 0
-        while i < len(inp):
-            inp[i] = inp[i].upper()
-            if inp[i] in ["SP", "OPT"]:
-                inp_dict["Job"] = inp[i]
-                del inp[i]
-                continue
-            elif "FREQ" in inp[i]:
-                inp_dict["Freq"] = True
-                del inp[i]
-                continue
-            elif inp[i] in ["B3LYP", "PBE"] or "WB9" in inp[i] or inp[i][:2] == "HF":
-                inp_dict["Functional"] = inp[i]
-                del inp[i]
-                if inp_dict["Functional"] == "HF-3C":
-                    inp_dict["BasisSet"] = "MINIX"
-                    inp_dict["Dispersion"] = "D3BJ"
-                continue
-            elif "CPCM" in inp[i] or "SMD" in inp[i]:
-                inp_dict["Solvation"] = inp[i]
-                del inp[i]
-                continue
-            elif "DEF2-" in inp[i] or "SVP" in inp[i] or "VP" in inp[i]:
-                inp_dict["BasisSet"] = inp[i]
-                del inp[i]
-                continue
-            elif "D3" in inp[i] or "D3BJ" in inp[i] or "D4" in inp[i]:
-                inp_dict["Dispersion"] = inp[i]
-                del inp[i]
-                continue
-            elif "DEFGRID" in inp[i]:
-                inp_dict["defgrid"] = inp[i]
-                del inp[i]
-                continue
-            elif "DEF2/J" in inp[i]:
-                inp_dict["def2J"] = True
-                del inp[i]
-                continue
-            elif inp[i] == "RIJCOSX":
-                inp_dict["RIJCOSX"] = True
-                del inp[i]
-                continue
-            elif "SLOWCONV" in inp[i]:
-                inp_dict["SlowConv"] = inp[i]
-                del inp[i]
-                continue
-            elif "SCF" in inp[i]:
-                inp_dict["SCF_conv_tol"] = inp[i]
-                del inp[i]
-                continue
-            i+= 1
+                    "version": self.orca_version,
+                    "SCF_conv_tol": None}
+        
+        # Finicky functionals
+        if "HF-3C" in inp:
+            inp_dict["Functional"] = "HF"
+        elif "Exchange Functional    Exchange        .... B88" in self.raw and "Correlation Functional Correlation     .... LYP" in self.raw:
+            inp_dict["Functional"] = "B3LYP"
+        else:
+            inp_dict["Functional"] = self.raw.split("Exchange Functional    Exchange        ....")[1].split("\n")[0].rstrip().replace(" ", "")
+        
+        #Dispersion
+        if "DFT DISPERSION CORRECTION" in self.raw:
+            if "USING Becke-Johnson damping" in self.raw:
+                inp_dict["Dispersion"] = "D3BJ"
+            else:
+                dispersion = self.raw.split("DFT DISPERSION CORRECTION")[1].split("\n")[2]
+                dispersion = dispersion.split("DFT")[1].split(" ")[0]
+                inp_dict["Dispersion"] = dispersion
+        else:
+            inp_dict["Dispersion"] = None
+        
+        # Defgrid
+        if "DEFGRID1" in inp:
+            inp_dict["DEFGRID"] = "DEFGRID1"
+        elif "DEFGRID3" in inp:
+            inp_dict["DEFGRID"] = "DEFGRID3"
+        else:
+            inp_dict["DEFGRID"] = "DEFGRID2"
+        
+        #slowconv
+        if "SLOWCONV" in inp:
+            if "VERYSLOWCONV" in inp:
+                inp_dict["SLOWCONV"] = "VERYSLOWCONV"
+            else:
+                inp_dict["SLOWCONV"] = "SLOWCONV"
+        else:
+            inp_dict["SLOWCONV"] = None    
+                
+        
+        #SCF convergence
+        if "SCF" in inp:
+            scf = inp.split()
+            scf = [x for x in scf if "SCF" in x][0]
+            inp_dict["SCF_conv_tol"] = scf
+            
+        #Solvation
+        if "CPCM SOLVATION MODEL" in self.raw:
+            inp_dict["Solvation"] = "CPCM"
+            eps = float(self.raw.split("Epsilon                                         ...")[1].split("\n")[0].strip())
+            refrac = float(self.raw.split("Refrac                                          ...")[1].split("\n")[0].strip())
+            if eps == 80.4 and refrac == 1.33:
+                inp_dict["Solvation"] = "CPCM(WATER)"
+            elif eps == 7.25 and refrac == 1.407:
+                inp_dict["Solvation"] = "CPCM(THF)"
+            else:
+                print(f"Couldnt assign CPCM solvent from eps = {eps} and refrac = {refrac}")
+            
+            
+            
         return inp_dict
-    
+
     def convergence(self):
         self.conv = dict()
         self.tol = dict()
@@ -336,6 +348,10 @@ class ORCAParse:
         self.fname = fname
         self.verbose = verbose
         self.raw = tricky_readin(fname)
+        if self.raw == "Couldnt decode output file as utf-8 or utf-16":
+            print(self.raw)
+            self.valid = False
+            return None
         self.ValidateOutput()
         self.convergence()
         self.TDDFT = False
