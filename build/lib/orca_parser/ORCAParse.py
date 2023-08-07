@@ -179,12 +179,15 @@ class ORCAParse:
         else:
             self.symmetry_number = 2
         
-        
-        frames = self.raw.split("GEOMETRY OPTIMIZATION CYCLE")
-        
         self.AllGibbs = {}
         self.entropies = {}
         self.enthalpies = {}
+        
+        if "Gibbs free energy" not in self.raw:
+            return None
+        
+        frames = self.raw.split("GEOMETRY OPTIMIZATION CYCLE")
+        
         for i, frame in enumerate(frames):
             if "Final Gibbs free energy" in frame:
                 G = frame.split("Final Gibbs free energy         ...")[1].split("Eh")[0]
@@ -227,8 +230,7 @@ class ORCAParse:
                     "Solvation": "Gas",
                     "Charge": self.Z,
                     "Multiplicity": self.Multiplicity,
-                    "version": self.orca_version,
-                    "SCF_conv_tol": None}
+                    "version": self.orca_version}
         
         # Finicky functionals
         if "HF-3C" in inp:
@@ -246,27 +248,22 @@ class ORCAParse:
                 dispersion = self.raw.split("DFT DISPERSION CORRECTION")[1].split("\n")[2]
                 dispersion = dispersion.split("DFT")[1].split(" ")[0]
                 inp_dict["Dispersion"] = dispersion
-        else:
-            inp_dict["Dispersion"] = None
         
         # Defgrid
         if "DEFGRID1" in inp:
-            inp_dict["DEFGRID"] = "DEFGRID1"
+            inp_dict["defgrid"] = "DEFGRID1"
         elif "DEFGRID3" in inp:
-            inp_dict["DEFGRID"] = "DEFGRID3"
+            inp_dict["defgrid"] = "DEFGRID3"
         else:
-            inp_dict["DEFGRID"] = "DEFGRID2"
+            inp_dict["defgrid"] = "DEFGRID2"
         
         #slowconv
         if "SLOWCONV" in inp:
             if "VERYSLOWCONV" in inp:
-                inp_dict["SLOWCONV"] = "VERYSLOWCONV"
+                inp_dict["SlowConv"] = "VERYSLOWCONV"
             else:
-                inp_dict["SLOWCONV"] = "SLOWCONV"
-        else:
-            inp_dict["SLOWCONV"] = None    
-                
-        
+                inp_dict["SlowConv"] = "SLOWCONV"
+
         #SCF convergence
         if "SCF" in inp:
             scf = inp.split()
