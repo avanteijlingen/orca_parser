@@ -79,6 +79,9 @@ class ORCAParse:
         else:
             self.valid = True
         
+        if "ORCA ab initio Molecular Dynamics Module":
+            self.valid = False
+        
         if "this file is used internally by ORCA" in self.raw:
             self.valid = False
             
