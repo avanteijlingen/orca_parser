@@ -5,12 +5,22 @@ Created on Thu Jul  6 10:37:13 2023
 @author: Alex
 """
 import numpy as np
-import ase, pandas
+import ase, pandas, os
 from ase.io import read
 
 
 
 def tricky_readin(fname):
+    # First try with the repr function
+    if not os.path.exists(fname):
+        print("Couldnt find:", fname)
+    
+# =============================================================================
+#     with open(fname, "r", encoding="utf8", errors='ignore') as f:
+#         content = f.read()
+#     print(content[-100:])
+# =============================================================================
+    
     # Frist try a linux / archie output
     try:
         with open(fname, "rb") as f:

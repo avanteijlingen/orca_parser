@@ -9,7 +9,7 @@ from orca_parser import *
 import ase, sys
 
 
-print("Min_140")
+print("Test-cases/Min_140.out")
 Min_140 = ORCAParse("Test-cases/Min_140.out", verbose=True)
 assert Min_140.valid, "This file is invalid"
 print(Min_140.parse_input())
