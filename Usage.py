@@ -9,6 +9,11 @@ from orca_parser import *
 import ase, sys
 
 
+print("Min_140")
+Min_140 = ORCAParse("Test-cases/Min_140.out", verbose=True)
+assert Min_140.valid, "This file is invalid"
+print(Min_140.parse_input())
+
 print("H2O")
 H2O = ORCAParse("Test-cases/H2O.out")
 assert H2O.valid, "This file is invalid"

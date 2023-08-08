@@ -79,7 +79,9 @@ class ORCAParse:
         else:
             self.valid = True
         
-        if "ORCA ab initio Molecular Dynamics Module":
+        if "ORCA ab initio Molecular Dynamics Module" in self.raw:
+            if self.verbose:
+                print("Orca-parser does not do ab-initio jobs")
             self.valid = False
         
         if "this file is used internally by ORCA" in self.raw:
