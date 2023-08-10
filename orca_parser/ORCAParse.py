@@ -96,6 +96,8 @@ class ORCAParse:
         
         if "this file is used internally by ORCA" in self.raw:
             self.valid = False
+        elif "this file is use internally by ORCA" in self.raw: # There is a spell mistake we need to account for in older versions of ORCA
+            self.valid = False
             
         if "THE OPTIMIZATION HAS CONVERGED" in self.raw:  
             self.CONVERGED = True
