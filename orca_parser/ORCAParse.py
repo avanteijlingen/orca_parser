@@ -261,6 +261,8 @@ class ORCAParse:
         if "DFT DISPERSION CORRECTION" in self.raw:
             if "USING Becke-Johnson damping" in self.raw:
                 inp_dict["Dispersion"] = "D3BJ"
+            elif "Active option DFTDOPT                   ...         2" in self.raw:
+                inp_dict["Dispersion"] = "D2"
             else:
                 dispersion = self.raw.split("DFT DISPERSION CORRECTION")[1].split("\n")[2]
                 dispersion = dispersion.split("DFT")[1].split(" ")[0]
