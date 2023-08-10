@@ -5,16 +5,22 @@ Created on Thu Jul  6 10:37:13 2023
 @author: Alex
 """
 import numpy as np
-import ase, pandas
+import ase, pandas, os
 from ase.io import read
 
 
 
 def tricky_readin(fname):
     # First try with the repr function
+    if not os.path.exists(fname):
+        print("Couldnt find:", fname)
     
-    x = repr(open(open(fname, "rb").read()))
-    print(x[-200:])
+# =============================================================================
+#     with open(fname, "r", encoding="utf8", errors='ignore') as f:
+#         content = f.read()
+#     print(content[-100:])
+# =============================================================================
+    
     # Frist try a linux / archie output
     try:
         with open(fname, "rb") as f:
@@ -89,6 +95,8 @@ class ORCAParse:
             self.valid = False
         
         if "this file is used internally by ORCA" in self.raw:
+            self.valid = False
+        elif "this file is use internally by ORCA" in self.raw: # There is a spell mistake we need to account for in older versions of ORCA
             self.valid = False
             
         if "THE OPTIMIZATION HAS CONVERGED" in self.raw:  
@@ -253,6 +261,8 @@ class ORCAParse:
         if "DFT DISPERSION CORRECTION" in self.raw:
             if "USING Becke-Johnson damping" in self.raw:
                 inp_dict["Dispersion"] = "D3BJ"
+            elif "Active option DFTDOPT                   ...         2" in self.raw:
+                inp_dict["Dispersion"] = "D2"
             else:
                 dispersion = self.raw.split("DFT DISPERSION CORRECTION")[1].split("\n")[2]
                 dispersion = dispersion.split("DFT")[1].split(" ")[0]
