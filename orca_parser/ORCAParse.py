@@ -20,24 +20,29 @@ def tricky_readin(fname):
 #         content = f.read()
 #     print(content[-100:])
 # =============================================================================
-    
-    # Frist try a linux / archie output
+    # first try with defaults
     try:
-        with open(fname, "rb") as f:
-            content = f.read().decode("utf-8")
-        #print("Encoded as UTF-8")
+        with open(fname, "r") as f:
+            content = f.read()
+        assert "Frank Neese" in content
     except:
-        # next try a winwdows 10/11 encoding
-        try:    
+        # next try a linux / archie output
+        try:
             with open(fname, "rb") as f:
-                content = f.read().decode("utf-16")        
-            #print("Encoded as UTF-16")
-            #Need to change \r\n to \n
-            content = content.replace("\r\n", "\n")
-            content = content.replace("\r", "")
+                content = f.read().decode("utf-8")
+            #print("Encoded as UTF-8")
         except:
-            content = "Couldnt decode output file as utf-8 or utf-16"
-            print(content)
+            # next try a winwdows 10/11 encoding
+            try:    
+                with open(fname, "rb") as f:
+                    content = f.read().decode("utf-16")        
+                #print("Encoded as UTF-16")
+                #Need to change \r\n to \n
+                content = content.replace("\r\n", "\n")
+                content = content.replace("\r", "")
+            except:
+                content = f"{fname}: Couldnt decode output file as utf-8 or utf-16"
+                print(content)
     return content
 
 def fit_rms(ref_c,c):
