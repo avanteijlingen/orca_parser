@@ -155,7 +155,7 @@ class ORCAParse:
             else:
                 self.coords = np.vstack((self.coords, np.array(positions).reshape(1,-1,3)))
         for x in self.atoms:
-            self.masses.append(self.Masses[x])
+            self.masses += self.Masses[x]
     
     def scan_bond(self, a0, a1):
         distances = np.ndarray((self.coords.shape[0]))
