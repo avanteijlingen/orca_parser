@@ -223,7 +223,32 @@ class ORCAParse:
                 self.entropies[i] = float(S)
         self.Gibbs = list(self.AllGibbs.values())[-1]
         
+    def parse_HOMO_LUMO(self):
+        frames = self.raw.split("ORBITAL ENERGIES")[1:]
         
+        self.all_HOMO = []
+        self.all_LUMO = []
+        
+        for i, frame in enumerate(frames):
+            orbitals_occ = []
+            orbitals_unocc = []
+            frame = frame.split("                    * MULLIKEN POPULATION ANALYSIS *")[0]
+            for line in frame.split("\n"):
+                line = line.split()
+                if len(line) != 4:
+                    continue
+                if "NO" in line:
+                    continue
+                if '0.0000' in line:
+                    orbitals_unocc.append([int(line[0]), float(line[1]), float(line[2]), float(line[3])])
+                    continue
+                else:
+                    orbitals_occ.append([int(line[0]), float(line[1]), float(line[2]), float(line[3])])
+                    continue
+            self.all_HOMO.append(max(orbitals_occ, key=lambda sublist: sublist[0]))
+            self.all_LUMO.append(min(orbitals_unocc, key=lambda sublist: sublist[0]))
+        
+        self.HOMO_LUMO_gap = self.all_HOMO[-1][2] - self.all_LUMO[-1][2]
         
     def seconds(self):
         time_str = self.raw.split("TOTAL RUN TIME:")[1].strip().split()
