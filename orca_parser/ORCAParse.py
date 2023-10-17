@@ -12,8 +12,7 @@ from ase.io import read
 
 def tricky_readin(fname):
     # First try with the repr function
-    if not os.path.exists(fname):
-        print("Couldnt find:", fname)
+    assert os.path.exists(fname), f"{fname} not found"
     
 # =============================================================================
 #     with open(fname, "r", encoding="utf8", errors='ignore') as f:

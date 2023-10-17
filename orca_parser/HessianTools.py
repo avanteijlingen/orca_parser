@@ -81,6 +81,7 @@ class HessianTools(ORCAParse):
                 disp.write(fname, append=True)
         
     def __init__(self, fname):
+        assert os.path.exists(fname), f"{fname} not found"
         self.raw = readin(fname)
         self.content = {}
         self.parseHess()
