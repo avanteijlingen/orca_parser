@@ -392,10 +392,18 @@ class ORCAParse:
                 self.R.append(float(line[3]))
     
     def parse_dipole(self):
-        txt = self.raw.split("DIPOLE MOMENT")[1]
+        txt = self.raw.split("DIPOLE MOMENT")[-1]
         txt = txt.split("Rotational spectrum")[0]
+        self.dipole = {}
         for line in txt.split("\n"):
-            print(line)
+            if ":" in line:
+                line = line.split(":")
+                key = line[0].strip()
+                vals = [float(x) for x in line[1].split()]
+                if len(vals) == 1:
+                    vals = vals[0]
+                print(line)
+                self.dipole[key] = vals
     
     def __init__(self, fname, verbose = False):
         self.fname = fname

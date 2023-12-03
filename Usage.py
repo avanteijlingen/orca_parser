@@ -45,8 +45,6 @@ assert Coordination_0.valid, "This file is invalid"
 print(Coordination_0.parse_input())
 
 
-sys.exit()
-
 H2O.parse_energies()
 H2O.parse_free_energy()
 
@@ -55,7 +53,7 @@ print(H2O.AllGibbs)
 print(H2O.entropies)
 print(H2O.enthalpies)
 
-sys.exit()
+
 
 #Hess = HessianTools("Test-cases/COO/COO.hess")
 Hess = HessianTools("Test-cases/Coordination_0.hess")
@@ -124,3 +122,8 @@ if any(notconv.energy_warnings):
     print("Unconverged energies found, removing them")
 print(notconv.energies[~notconv.energy_warnings].shape[0])
 
+
+
+print("Parse Dipole Moment:")
+Dipole = ORCAParse("Test-cases/Dipole.out")
+Dipole.parse_dipole()
