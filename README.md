@@ -2,10 +2,14 @@
 A python module to parse data out of ORCA output files
 
 This module is availible at: https://pypi.org/project/orca-parser/
-and can be installed *via* pip install orca-parser
+and can be installed *via* 
+
+```bash
+pip install orca-parser
+```
 
 The module use as:
-```
+```python
 import orca_parser
 Optimization = orca_parser.ORCAParse("Test-cases/Phenol/Opt.out")
 
