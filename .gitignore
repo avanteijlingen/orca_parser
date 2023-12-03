@@ -2,3 +2,5 @@
 *.bat
 *.xyz
 *.bak
+
+dist/
