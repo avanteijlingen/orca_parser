@@ -4,3 +4,5 @@
 *.bak
 
 dist/
+build/
+orca_parser.egg-info/
