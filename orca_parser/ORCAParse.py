@@ -42,7 +42,7 @@ def tricky_readin(fname):
             except:
                 content = f"{fname}: Couldnt decode output file as utf-8 or utf-16"
                 print(content)
-    return content
+    return content.replace("\r\n", "\n")
 
 def fit_rms(ref_c,c):
     # move geometric center to the origin
@@ -391,6 +391,11 @@ class ORCAParse:
                 self.CD.append(float(line[2]))
                 self.R.append(float(line[3]))
     
+    def parse_dipole(self):
+        txt = self.raw.split("DIPOLE MOMENT")[1]
+        txt = txt.split("Rotational spectrum")[0]
+        for line in txt.split("\n"):
+            print(line)
     
     def __init__(self, fname, verbose = False):
         self.fname = fname

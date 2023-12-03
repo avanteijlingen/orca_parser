@@ -13,7 +13,7 @@ class HessianTools(ORCAParse):
         for section in self.raw.split("$")[1:]:
             section = section.split("\n")
             self.content[section[0]] = "\n".join([x for x in section[1:] if len(x) != 0])
-            
+
         self.getAtoms()
         self.getNormalModes()
         self.getSpectra()
@@ -53,6 +53,7 @@ class HessianTools(ORCAParse):
             if row == self.Nnormalmodes-1:
                 basecol += 5
         self.normalmodes = pandas.DataFrame(self.normalmodes)
+        
     def getSpectra(self):
         self.IR = pandas.DataFrame(columns="wavenumber eps Int TX TY TZ".split())
         i = 0
@@ -63,6 +64,7 @@ class HessianTools(ORCAParse):
             line = [float(x) for x in line]
             self.IR.loc[i] = line
             i+=1
+            
     def WriteMode(self, fname, mode, steps=10, amplitude=1):
         self.mol.write(fname, append=False)
         disp = self.mol.copy()
@@ -82,6 +84,6 @@ class HessianTools(ORCAParse):
         
     def __init__(self, fname):
         assert os.path.exists(fname), f"{fname} not found"
-        self.raw = readin(fname)
+        self.raw = tricky_readin(fname)
         self.content = {}
         self.parseHess()
