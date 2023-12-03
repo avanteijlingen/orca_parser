@@ -1,8 +1,9 @@
 from setuptools import setup
+exec(open('orca_parser/version.py').read())
 
 setup(
     name='orca_parser',
-    version='0.1.21',
+    version=__version__,
     description='A module for parse ORCA output files including hessians (.hess) files',
     url='https://github.com/avanteijlingen/ORCA-Parser',
     author='Alexander van Teijlingen',
