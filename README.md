@@ -1,4 +1,4 @@
-# ORCA-Parser
+# orca_parser
 A python module to parse data out of ORCA output files
 
 This module is availible at: https://pypi.org/project/orca-parser/
