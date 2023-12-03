@@ -402,7 +402,6 @@ class ORCAParse:
                 vals = [float(x) for x in line[1].split()]
                 if len(vals) == 1:
                     vals = vals[0]
-                print(line)
                 self.dipole[key] = vals
     
     def __init__(self, fname, verbose = False):
