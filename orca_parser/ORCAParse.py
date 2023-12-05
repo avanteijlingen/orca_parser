@@ -7,7 +7,7 @@ Created on Thu Jul  6 10:37:13 2023
 import numpy as np
 import ase, pandas, os
 from ase.io import read
-
+from ase import Atoms
 
 
 def tricky_readin(fname):
@@ -72,6 +72,20 @@ def calc_rmsd(c1, c2):
 
 
 class ORCAParse:
+    @property
+    def asemol(self):
+        """
+        
+
+        Returns
+        -------
+        ase.Atoms
+            An ase molecule with the coordinates of the last conformer in the orca output.
+
+        """
+        self.parse_coords()
+        return Atoms(self.atoms, self.coords[-1])
+    
     def ValidateOutput(self):
         if "TOTAL RUN TIME:" in self.raw:
             self.time = self.raw.split("TOTAL RUN TIME:")[1]
@@ -125,6 +139,7 @@ class ORCAParse:
             part = float(part)
             self.energies = np.hstack((self.energies, [part]))
         #self.r_energies = self.energies - self.energies.min()
+        
     def parse_dispersion(self):
         splits = self.raw.split("\nDispersion correction")[1:]
         self.dispersions = np.ndarray((len(splits),))

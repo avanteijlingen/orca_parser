@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: orca-parser
-Version: 0.1.21
+Version: 0.1.23
 Summary: A module for parse ORCA output files including hessians (.hess) files
 Home-page: https://github.com/avanteijlingen/ORCA-Parser
 Author: Alexander van Teijlingen
@@ -8,4 +8,50 @@ Author-email: a.vant@linuxmail.org
 License: BSD 2-clause
 Classifier: Intended Audience :: Science/Research
 Classifier: Programming Language :: Python :: 3.10
+Description-Content-Type: text/markdown
 License-File: LICENSE
+
+# ORCA-Parser
+A python module to parse data out of ORCA output files
+
+This module is availible at: https://pypi.org/project/orca-parser/
+and can be installed *via* 
+
+```bash
+pip install orca-parser
+```
+
+The module use as:
+```python
+import orca_parser
+Optimization = orca_parser.ORCAParse("Test-cases/Phenol/Opt.out")
+
+print("ORCA exited normally:", Optimization.valid)
+print("Job took:", Optimization.seconds(), "seconds")
+print("Job input line:", Optimization.parse_input())
+
+Optimization.parse_coords()
+print("Atoms:", Optimization.atoms)
+print("Final coordinates:")
+print(Optimization.coords[-1])
+```
+
+
+### Requirements:
+[ase](https://gitlab.com/ase/ase), numpy, pandas
+
+# Orca parser contains two classes:
+
+#### ORCAParse
+Reads orca output streams (.out/.log/etc)
+Can read frequencies, atoms, coordinates, IR spectra, free energy (broken down into its components as well)
+Can also tell you how the job finished, if it converged etc
+
+#### HessianTools
+Reads orca Hessian (.hess) outputs
+Can parse the atoms and coordinates, normal modes, IR spectra.
+From this .xyz trajectories of normal modes can be written
+
+## Usage:
+Example usage can be found in Usage.py, along with example ORCA output files in the "Test-cases" folder.
+

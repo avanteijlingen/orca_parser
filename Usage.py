@@ -127,3 +127,9 @@ print(notconv.energies[~notconv.energy_warnings].shape[0])
 print("Parse Dipole Moment:")
 Dipole = ORCAParse("Test-cases/Dipole.out")
 Dipole.parse_dipole()
+
+
+
+print("ASE mol:")
+
+print(Dipole.asemol)
