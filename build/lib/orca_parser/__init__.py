@@ -13,6 +13,7 @@ import os, glob, sys, pandas, ase
 from .version import __version__
 from orca_parser.ORCAParse import *
 from orca_parser.HessianTools import *
+from orca_parser.parse_engrad import *
 
 # 1 Bohr = 0.52917724900001 Angstrom
 

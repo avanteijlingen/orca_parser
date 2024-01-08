@@ -39,6 +39,11 @@ Reads orca Hessian (.hess) outputs
 Can parse the atoms and coordinates, normal modes, IR spectra.
 From this .xyz trajectories of normal modes can be written
 
+#### parse_engrad
+Reads orca engrad (.engrad) outputs
+returns the number of atoms, the energy (Ha), the atomic numbers, coordinates and forces
+coordinates and forces are returned as (N,3) matrices
+
 ## Usage:
 Example usage can be found in Usage.py, along with example ORCA output files in the "Test-cases" folder.
 
