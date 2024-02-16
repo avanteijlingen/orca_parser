@@ -16,7 +16,6 @@ print(K_partial_crown.charges)
 assert K_partial_crown.charges["Mulliken"][3] == -0.741417
 assert K_partial_crown.charges["Mayer"][14] == 0.1226
 
-sys.exit(0)
 print("Test-cases/Min_140.out")
 Min_140 = ORCAParse("Test-cases/Min_140.out", verbose=True)
 assert Min_140.valid, "This file is invalid"
