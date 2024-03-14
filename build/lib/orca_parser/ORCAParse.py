@@ -418,7 +418,31 @@ class ORCAParse:
                 if len(vals) == 1:
                     vals = vals[0]
                 self.dipole[key] = vals
-    
+                
+    def parse_charges(self):
+        self.charges = {"Mulliken": [], "Loewdin": [], "Mayer": []}
+        txt = self.raw.split("MULLIKEN ATOMIC CHARGES")[-1]
+        txt = txt.split("Sum of atomic charges:")[0]
+        for line in txt.split("\n"):
+            if ":" in line:
+                self.charges["Mulliken"].append(float(line.split()[-1]))
+        txt = self.raw.split("LOEWDIN POPULATION ANALYSIS")[-1]
+        txt = txt.split("LOEWDIN REDUCED ORBITAL CHARGES")[0]
+        for line in txt.split("\n"):
+            if ":" in line:
+                self.charges["Loewdin"].append(float(line.split()[-1]))
+                
+        txt = self.raw.split("MAYER POPULATION ANALYSIS")[-1]
+        txt = txt.split("Mayer bond orders larger than")[0]
+        for line in txt.split("\n"):
+            line = line.split()
+            if len(line) == 8:
+                self.charges["Mayer"].append(float(line[4]))
+        
+        self.charges["Mulliken"] = np.array(self.charges["Mulliken"])
+        self.charges["Loewdin"] = np.array(self.charges["Loewdin"])
+        self.charges["Mayer"] = np.array(self.charges["Mayer"])
+
     def __init__(self, fname, verbose = False):
         self.fname = fname
         self.verbose = verbose

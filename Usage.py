@@ -8,6 +8,17 @@ import matplotlib.pyplot as plt
 from orca_parser import *
 import ase, sys
 
+
+ams = ams_parse("Test-cases/AMS/133885_xyz.out")
+ams.parse_energies()
+ams.parse_coords()
+print(ams.valid)
+print(ams.energies)
+print(ams.coords)
+ams.asemol.write("Test-cases/AMS/133885_xyz.xyz")
+
+sys.exit()
+
 print("Test-cases/K_partial_crown.out")
 K_partial_crown = ORCAParse("Test-cases/K_partial_crown.out", verbose=True)
 K_partial_crown.parse_charges()
