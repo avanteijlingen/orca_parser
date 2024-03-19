@@ -345,11 +345,15 @@ class ORCAParse:
                 inp_dict["Solvation"] = "CPCM(WATER)"
             elif eps == 7.25 and refrac == 1.407:
                 inp_dict["Solvation"] = "CPCM(THF)"
+            elif eps == 47.2 and refrac == 1.479:
+                inp_dict["Solvation"] = "CPCM(DMSO)"
+            elif eps == 36.6 and refrac == 1.344:
+                inp_dict["Solvation"] = "CPCM(Acetonitrile)"
+                
+                CPCM(Acetonitrile)
             else:
                 print(f"Couldnt assign CPCM solvent from eps = {eps} and refrac = {refrac}")
-            
-            
-            
+
         return inp_dict
 
     def convergence(self):
