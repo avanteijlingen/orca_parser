@@ -349,8 +349,6 @@ class ORCAParse:
                 inp_dict["Solvation"] = "CPCM(DMSO)"
             elif eps == 36.6 and refrac == 1.344:
                 inp_dict["Solvation"] = "CPCM(Acetonitrile)"
-                
-                CPCM(Acetonitrile)
             else:
                 print(f"Couldnt assign CPCM solvent from eps = {eps} and refrac = {refrac}")
 
