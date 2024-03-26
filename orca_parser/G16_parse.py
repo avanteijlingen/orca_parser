@@ -33,21 +33,22 @@ class GaussianParse(ORCAParse):
         return lines
     
     def parse_atoms(self):
-        parse_atoms, line_skip = False, 0
+        atms, line_skip = False, 0
         for line in self.lines:
             if 'Charge =  ' in line:
-                parse_atoms = True
+                atms = True
                 continue
             if " Redundant internal coordinates found in file.  (old form)." in line:
-                parse_atoms = False
+                atms = False
                 continue
-            if parse_atoms:
+            if atms:
                 parts = line.strip().split()
                 if len(parts) == 0:
-                    parse_atoms = False
+                    atms = False
                     continue
-                print(parts)
-                self.atoms.append(parts[0])
+                atm = parts[0].split("(PDBName")[0]
+                print(atm)
+                self.atoms.append(atm)
         for atom in self.atoms:
             self.masses.append(self.Masses[atom])
             
