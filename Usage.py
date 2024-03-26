@@ -10,7 +10,8 @@ import ase, sys
 
 # Gaussian
 gparse = GaussianParse("Test-cases/Gaussian/PPh3.log")
-
+gparse.parse_coords()
+print(gparse.coords)
 
 sys.exit()
 

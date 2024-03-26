@@ -15,8 +15,6 @@ class GaussianParse(ORCAParse):
     def __init__(self, filepath, verbose=False):
         super().__init__(filepath, verbose = verbose)
         self.filepath = filepath
-        self.atoms = []
-        self.masses = []
         self.energies = np.array([])
         self.lines = self._read_lines()
         if self.validate_output():
@@ -68,7 +66,6 @@ class GaussianParse(ORCAParse):
         """Parse the coordinates from each step of the optimization."""
         reading_coordinates, skip_lines = False, 0
         step_coords = []
-        self.coordinates = []
         
         for line in self.lines:
             if skip_lines > 0:
@@ -77,7 +74,7 @@ class GaussianParse(ORCAParse):
             
             if 'Input orientation:' in line:
                 if step_coords:
-                    self.coordinates.append(np.array(step_coords).reshape(1, -1, 3))
+                    self.coords.append(np.array(step_coords).reshape(1, -1, 3))
                     step_coords = []
                 skip_lines = 4
                 reading_coordinates = True

@@ -150,9 +150,6 @@ class ORCAParse:
             self.dispersions[i] = float(E_disp)
         
     def parse_coords(self):
-        self.coords = []
-        self.atoms = []
-        self.masses = []
         frames = self.raw.split("CARTESIAN COORDINATES (ANGSTROEM)")[1:]
         for i,frame in enumerate(frames):
             positions = []
@@ -456,6 +453,9 @@ class ORCAParse:
         self.ValidateOutput()
         self.convergence()
         self.TDDFT = False
+        self.coords = []
+        self.atoms = []
+        self.masses = []
         self.Masses = {'H' : 1.008,'He' : 4.003, 'Li' : 6.941, 'Be' : 9.012,\
                  'B' : 10.811, 'C' : 12.011, 'N' : 14.007, 'O' : 15.999,\
                  'F' : 18.998, 'Ne' : 20.180, 'Na' : 22.990, 'Mg' : 24.305,\
