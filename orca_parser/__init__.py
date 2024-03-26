@@ -15,6 +15,7 @@ from orca_parser.ORCAParse import *
 from orca_parser.HessianTools import *
 from orca_parser.parse_engrad import *
 from orca_parser.ams_parse import *
+from orca_parser.G16_parse import *
 
 # 1 Bohr = 0.52917724900001 Angstrom
 
