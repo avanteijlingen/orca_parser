@@ -11,9 +11,26 @@ import ase, sys
 # Gaussian
 gparse = GaussianParse("Test-cases/Gaussian/PPh3.log")
 gparse.parse_coords()
-print(gparse.coords)
-print(gparse.coords.shape)
+gparse.parse_energies()
+print(gparse.valid, gparse.coords.shape)
 assert len(gparse.atoms) == gparse.coords.shape[1]
+for i in range(gparse.coords.shape[0]):
+    mol = Atoms(gparse.atoms, gparse.coords[i])
+    mol.write("GParse.xyz", append = (i>0))
+
+gparse = GaussianParse("Test-cases/Gaussian/ox2.out")
+gparse.parse_coords()
+gparse.parse_energies()
+print(gparse.valid, gparse.coords.shape, gparse.energies.shape)
+assert len(gparse.atoms) == gparse.coords.shape[1] == gparse.energies.shape[0]
+gparse.asemol.write("GParse.xyz", append=True)
+
+gparse = GaussianParse("Test-cases/Gaussian/RC-Me_try4_tol.out")
+gparse.parse_coords()
+gparse.parse_energies()
+print(gparse.valid, gparse.coords.shape)
+assert len(gparse.atoms) == gparse.coords.shape[1]
+gparse.asemol.write("GParse.xyz", append=True)
 
 sys.exit()
 
