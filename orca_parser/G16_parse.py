@@ -12,6 +12,12 @@ from . import ORCAParse
 import numpy as np
 
 class GaussianParse(ORCAParse):
+    def ValidateOutput(self):
+        self.valid = False
+        if "Normal termination of Gaussian" in self.raw:
+            if "SCF Done:" in self.raw:
+                self.valid = True
+                
     def __init__(self, filepath, verbose=False):
         super().__init__(filepath, verbose = verbose)
         self.filepath = filepath
@@ -76,7 +82,7 @@ class GaussianParse(ORCAParse):
                     if type(self.coords) is list:
                         self.coords = np.array(step_coords).reshape(1, -1, 3)
                     else:
-                        print(self.coords.shape, np.array(step_coords).reshape(1, -1, 3).shape)
+                        #print(self.coords.shape, np.array(step_coords).reshape(1, -1, 3).shape)
                         self.coords = np.vstack((  self.coords, np.array(step_coords).reshape(1, -1, 3) ))                       
                     step_coords = []
                 skip_lines = 4
