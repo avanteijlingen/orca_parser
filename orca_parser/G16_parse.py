@@ -19,7 +19,7 @@ class GaussianParse(ORCAParse):
         self.lines = self._read_lines()
         if self.validate_output():
             self.parse_energies()
-            self.parse_coords()
+            #self.parse_coords()
             self.parse_atoms()
         else:
             print("The Gaussian output file did not terminate normally or is not valid.")
@@ -45,7 +45,6 @@ class GaussianParse(ORCAParse):
                     atms = False
                     continue
                 atm = parts[0].split("(PDBName")[0]
-                print(atm)
                 self.atoms.append(atm)
         for atom in self.atoms:
             self.masses.append(self.Masses[atom])
@@ -74,7 +73,11 @@ class GaussianParse(ORCAParse):
             
             if 'Input orientation:' in line:
                 if step_coords:
-                    self.coords.append(np.array(step_coords).reshape(1, -1, 3))
+                    if type(self.coords) is list:
+                        self.coords = np.array(step_coords).reshape(1, -1, 3)
+                    else:
+                        print(self.coords.shape, np.array(step_coords).reshape(1, -1, 3).shape)
+                        self.coords = np.vstack((  self.coords, np.array(step_coords).reshape(1, -1, 3) ))                       
                     step_coords = []
                 skip_lines = 4
                 reading_coordinates = True

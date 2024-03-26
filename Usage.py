@@ -12,6 +12,8 @@ import ase, sys
 gparse = GaussianParse("Test-cases/Gaussian/PPh3.log")
 gparse.parse_coords()
 print(gparse.coords)
+print(gparse.coords.shape)
+assert len(gparse.atoms) == gparse.coords.shape[1]
 
 sys.exit()
 
