@@ -15,7 +15,7 @@ import numpy as np
 
 class GaussianParse(ORCAParse):
     def __init__(self, filepath, verbose):
-        super().__init__(filepath, verbose = False)
+        super().__init__(filepath, verbose = verbose)
         self.filepath = filepath
         self.atoms = []  # Atom symbols, populated once
         self.masses = []  # Atomic masses, populated once
