@@ -11,15 +11,13 @@ import sys
 from . import ORCAParse
 import numpy as np
 
-
-
 class GaussianParse(ORCAParse):
     def __init__(self, filepath, verbose):
         super().__init__(filepath, verbose = False)
         self.filepath = filepath
-        self.atoms = []  # Atom symbols, populated once
-        self.masses = []  # Atomic masses, populated once
-        self.energies = np.array([])  # Energies for each step
+        self.atoms = []
+        self.masses = []
+        self.energies = np.array([])
         self.lines = self._read_lines()
         if self.validate_output():
             self.parse_energies()
@@ -68,8 +66,8 @@ class GaussianParse(ORCAParse):
     def parse_coords(self):
         """Parse the coordinates from each step of the optimization."""
         reading_coordinates, skip_lines = False, 0
-        step_coords = []  # Temporary list to hold coordinates for the current step
-        self.coordinates = []  # Final list of steps, where each step is a list of coordinates
+        step_coords = []
+        self.coordinates = []
         
         for line in self.lines:
             if skip_lines > 0:
@@ -77,29 +75,19 @@ class GaussianParse(ORCAParse):
                 continue
             
             if 'Input orientation:' in line:
-                if step_coords:  # Check if there are coordinates from a previous step
-                    self.coordinates.append(np.array(step_coords).reshape(1, -1, 3))  # Add them to the coordinates list
-                    step_coords = []  # Reset for the next step
-                skip_lines = 4  # Skip the next 4 lines (headers)
+                if step_coords:
+                    self.coordinates.append(np.array(step_coords).reshape(1, -1, 3))
+                    step_coords = []
+                skip_lines = 4
                 reading_coordinates = True
                 continue
     
             if reading_coordinates:
                 if "---------------------------------------------------------------------" in line:
-                    reading_coordinates = False  # Stop reading coordinates
-                    continue  # Skip to the next line in the file
+                    reading_coordinates = False
+                    continue
     
                 parts = line.strip().split()
-                if len(parts) >= 6:  # Valid coordinate line
-                    # Extract and store coordinates
+                if len(parts) >= 6: 
+
                     step_coords.append(list(map(float, parts[3:6])))
-        
-
-
-# Example usage:
-parser = GaussianParse('../Test_Gaussian_Output/but-2-ene.log')
-# print("Energies:", parser.energies)
-# print("Coordinates:", parser.coords)  # A list of numpy arrays, each representing a step
-# print("Atoms:", parser.atoms)
-# print("Masses:", parser.masses)
-
