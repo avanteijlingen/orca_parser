@@ -21,7 +21,7 @@ class GaussianParse(ORCAParse):
     def __init__(self, filepath, verbose=False):
         super().__init__(filepath, verbose = verbose)
         self.filepath = filepath
-        self.energies = np.array([])
+
         self.lines = self._read_lines()
         if self.validate_output():
             print("File terminated Normally")
@@ -60,6 +60,7 @@ class GaussianParse(ORCAParse):
 
     def parse_energies(self):
         """Parse the SCF energies from the output file."""
+        self.energies = np.array([])
         for line in self.lines:
             if 'SCF Done:' in line:
                 energy = float(line.split()[4])
