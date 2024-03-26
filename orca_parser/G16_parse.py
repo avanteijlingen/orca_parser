@@ -24,9 +24,11 @@ class GaussianParse(ORCAParse):
 
         self.lines = self._read_lines()
         if self.validate_output():
-            print("File terminated Normally")
+            if self.verbose:
+                print("File terminated Normally")
         else:
-            print("The Gaussian output file did not terminate normally or is not valid.")
+            if self.verbose:
+                print("The Gaussian output file did not terminate normally or is not valid.")
 
     def _read_lines(self):
         """Read the file and store lines for further processing."""
