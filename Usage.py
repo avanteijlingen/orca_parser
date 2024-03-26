@@ -8,7 +8,13 @@ import matplotlib.pyplot as plt
 from orca_parser import *
 import ase, sys
 
+# Gaussian
+gparse = GaussianParse("Test-cases/Gaussian/PPh3.log")
 
+
+sys.exit()
+
+# AMS
 ams = ams_parse("Test-cases/AMS/133885_xyz.out")
 ams.parse_energies()
 ams.parse_coords()
