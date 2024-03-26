@@ -24,9 +24,7 @@ class GaussianParse(ORCAParse):
         self.energies = np.array([])
         self.lines = self._read_lines()
         if self.validate_output():
-            self.parse_energies()
-            #self.parse_coords()
-            self.parse_atoms()
+            print("File terminated Normally")
         else:
             print("The Gaussian output file did not terminate normally or is not valid.")
 
@@ -66,6 +64,7 @@ class GaussianParse(ORCAParse):
             if 'SCF Done:' in line:
                 energy = float(line.split()[4])
                 self.energies = np.append(self.energies, energy)
+                continue
 
     def parse_coords(self):
         """Parse the coordinates from each step of the optimization."""
@@ -77,7 +76,7 @@ class GaussianParse(ORCAParse):
                 skip_lines -= 1
                 continue
             
-            if 'Input orientation:' in line:
+            if 'Standard orientation:' in line:
                 if step_coords:
                     if type(self.coords) is list:
                         self.coords = np.array(step_coords).reshape(1, -1, 3)
