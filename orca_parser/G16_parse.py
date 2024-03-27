@@ -42,7 +42,7 @@ class GaussianParse(ORCAParse):
             if 'Charge =  ' in line:
                 atms = True
                 continue
-            if " Redundant internal coordinates found in file.  (old form)." in line:
+            if " Redundant internal coordinates found in file." in line:
                 atms = False
                 continue
             if atms:
