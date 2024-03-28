@@ -75,8 +75,6 @@ class ORCAParse:
     @property
     def asemol(self):
         """
-        
-
         Returns
         -------
         ase.Atoms
@@ -84,6 +82,7 @@ class ORCAParse:
 
         """
         self.parse_coords()
+        #print(len(self.atoms), len(self.coords[-1]))
         return Atoms(self.atoms, self.coords[-1])
     
     def ValidateOutput(self):
@@ -150,6 +149,8 @@ class ORCAParse:
             self.dispersions[i] = float(E_disp)
         
     def parse_coords(self):
+        self.coords = []
+        self.atoms = []
         frames = self.raw.split("CARTESIAN COORDINATES (ANGSTROEM)")[1:]
         for i,frame in enumerate(frames):
             positions = []
