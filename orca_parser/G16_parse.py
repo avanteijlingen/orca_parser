@@ -72,31 +72,21 @@ class GaussianParse(ORCAParse):
     def parse_coords(self):
         """Parse the coordinates from each step of the optimization."""
         reading_coordinates, skip_lines = False, 0
-        step_coords = []
+        self.coords = np.ndarray((0,3))
         
-        for line in self.lines:
-            if skip_lines > 0:
-                skip_lines -= 1
-                continue
-            
-            if 'Standard orientation:' in line:
-                if step_coords:
-                    if type(self.coords) is list:
-                        self.coords = np.array(step_coords).reshape(1, -1, 3)
-                    else:
-                        #print(self.coords.shape, np.array(step_coords).reshape(1, -1, 3).shape)
-                        self.coords = np.vstack((  self.coords, np.array(step_coords).reshape(1, -1, 3) ))                       
-                    step_coords = []
-                skip_lines = 4
-                reading_coordinates = True
-                continue
-    
-            if reading_coordinates:
-                if "---------------------------------------------------------------------" in line:
-                    reading_coordinates = False
+        coord_blocks = self.raw.split('Standard orientation:')[1:]
+        for block in coord_blocks:
+            natoms = 0
+            block = block.split("---------------------------------------------------------------------")[2]
+            for line in block.split("\n"):
+                line = line.split()
+                if len(line) != 6:
                     continue
-    
-                parts = line.strip().split()
-                if len(parts) >= 6: 
-
-                    step_coords.append(list(map(float, parts[3:6])))
+                self.coords = np.vstack((  self.coords, [float(x) for x in line[3:]] ))                      
+                natoms += 1
+        self.coords = self.coords.reshape((-1, natoms, 3))
+        # Sometimes the last one is doubled up in the file
+        if self.coords.shape[0] > 1:
+            if (self.coords[-1] == self.coords[-2]).all():
+                self.coords = np.delete(self.coords, [-1], axis=0)
+        
