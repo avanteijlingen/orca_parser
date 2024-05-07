@@ -292,7 +292,8 @@ class ORCAParse:
                     "Solvation": "Gas",
                     "Charge": self.Z,
                     "Multiplicity": self.Multiplicity,
-                    "version": self.orca_version}
+                    "version": self.orca_version,
+                    "software": "ORCA"}
         
         # Finicky functionals
         if "HF-3C" in inp:
