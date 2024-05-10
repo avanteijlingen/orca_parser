@@ -8,29 +8,40 @@ import matplotlib.pyplot as plt
 from orca_parser import *
 import ase, sys
 
+# Dipole
+
+op = ORCAParse("Test-cases/Dipole/BisTris_opt.out")
+print(op.parse_dipole())
+op = ORCAParse("Test-cases/Dipole/Single.out")
+print(op.parse_dipole())
+op = ORCAParse("Test-cases/Dipole.out")
+print(op.parse_dipole())
+
+
+sys.exit()
+
 # Gaussian
 gparse = GaussianParse("Test-cases/Gaussian/PPh3.log")
 gparse.parse_coords()
 gparse.parse_energies()
-gparse.parse_atoms()
 print(gparse.valid, gparse.coords.shape, gparse.energies.shape)
 assert len(gparse.atoms) == gparse.coords.shape[1]
 for i in range(gparse.coords.shape[0]):
     mol = Atoms(gparse.atoms, gparse.coords[i])
     mol.write("GParse.xyz", append = (i>0))
 
+
 gparse = GaussianParse("Test-cases/Gaussian/ox2.out")
 gparse.parse_coords()
 gparse.parse_energies()
-gparse.parse_atoms()
 print(gparse.valid, gparse.coords.shape, gparse.energies.shape)
 assert len(gparse.atoms) == gparse.coords.shape[1]
 gparse.asemol.write("GParse.xyz", append=True)
 
+
 gparse = GaussianParse("Test-cases/Gaussian/RC-Me_try4_tol.out")
 gparse.parse_coords()
 gparse.parse_energies()
-gparse.parse_atoms()
 print(gparse.valid, gparse.coords.shape, gparse.energies.shape)
 assert len(gparse.atoms) == gparse.coords.shape[1]
 gparse.asemol.write("GParse.xyz", append=True)
@@ -170,10 +181,6 @@ if any(notconv.energy_warnings):
 print(notconv.energies[~notconv.energy_warnings].shape[0])
 
 
-
-print("Parse Dipole Moment:")
-Dipole = ORCAParse("Test-cases/Dipole.out")
-Dipole.parse_dipole()
 
 
 
