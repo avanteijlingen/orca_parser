@@ -75,8 +75,6 @@ class ORCAParse:
     @property
     def asemol(self):
         """
-        
-
         Returns
         -------
         ase.Atoms
@@ -84,6 +82,7 @@ class ORCAParse:
 
         """
         self.parse_coords()
+        #print(len(self.atoms), len(self.coords[-1]))
         return Atoms(self.atoms, self.coords[-1])
     
     def ValidateOutput(self):
@@ -126,6 +125,23 @@ class ORCAParse:
         #Search for the INNER ENERGY section
         pass
     
+    def parse_dipole(self):
+        assert "DIPOLE MOMENT" in self.raw
+        dipoles = []
+        for section in self.raw.split("DIPOLE MOMENT")[1:]:
+            section = section.split("Rotational spectrum ")[0]
+            dipole = {}
+            
+            for part in ["Electronic contribution", "Nuclear contribution", "Total Dipole Moment", "Magnitude (a.u.)", "Magnitude (Debye)"]:
+                dipole[part] = section.split(part)[1].split(":")[1].split("\n")[0].split()
+                dipole[part] = [float(x) for x in dipole[part]]
+            dipoles.append(dipole)
+            
+        if len(dipoles) == 1:
+            return dipole
+        else:
+            return dipoles
+            
     def parse_energies(self):
         self.energies = np.ndarray((0,), np.float64)
         self.energy_warnings = np.ndarray((0,), np.bool_)
@@ -150,6 +166,8 @@ class ORCAParse:
             self.dispersions[i] = float(E_disp)
         
     def parse_coords(self):
+        self.coords = []
+        self.atoms = []
         frames = self.raw.split("CARTESIAN COORDINATES (ANGSTROEM)")[1:]
         for i,frame in enumerate(frames):
             positions = []
@@ -291,7 +309,8 @@ class ORCAParse:
                     "Solvation": "Gas",
                     "Charge": self.Z,
                     "Multiplicity": self.Multiplicity,
-                    "version": self.orca_version}
+                    "version": self.orca_version,
+                    "software": "ORCA"}
         
         # Finicky functionals
         if "HF-3C" in inp:
@@ -404,20 +423,7 @@ class ORCAParse:
             if len(line) > 4:
                 self.CD.append(float(line[2]))
                 self.R.append(float(line[3]))
-    
-    def parse_dipole(self):
-        txt = self.raw.split("DIPOLE MOMENT")[-1]
-        txt = txt.split("Rotational spectrum")[0]
-        self.dipole = {}
-        for line in txt.split("\n"):
-            if ":" in line:
-                line = line.split(":")
-                key = line[0].strip()
-                vals = [float(x) for x in line[1].split()]
-                if len(vals) == 1:
-                    vals = vals[0]
-                self.dipole[key] = vals
-                
+                    
     def parse_charges(self):
         self.charges = {"Mulliken": [], "Loewdin": [], "Mayer": []}
         txt = self.raw.split("MULLIKEN ATOMIC CHARGES")[-1]

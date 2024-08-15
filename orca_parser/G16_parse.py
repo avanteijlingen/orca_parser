@@ -7,7 +7,7 @@ Created on Thu Mar 21 15:20:02 2024
 """
 
 import numpy as np
-import sys
+import sys, ase
 from . import ORCAParse
 import numpy as np
 
@@ -24,9 +24,41 @@ class GaussianParse(ORCAParse):
 
         self.lines = self._read_lines()
         if self.validate_output():
-            print("File terminated Normally")
+            if self.verbose:
+                print("File terminated Normally")
         else:
-            print("The Gaussian output file did not terminate normally or is not valid.")
+            if self.verbose:
+                print("The Gaussian output file did not terminate normally or is not valid.")
+                
+    def parse_input(self):
+        self.Z = int(self.raw.split("Charge = ")[1].split("Multiplicity")[0])
+        self.Multiplicity = int(self.raw.split("Multiplicity = ")[1].split("\n")[0].strip())
+        if "Optimization completed" in self.raw :
+            Job = "OPT"
+        elif "IRC-IRC-IRC" in self.raw:
+            Job = "IRC"
+        else:
+            Job = "SP"
+        
+        if "Solvent              :" in self.raw:
+            Solv = self.raw.split("Solvent              :")[1].strip().split()[0].replace(",", "")
+        else:
+            Solv = "Gas"
+            
+        inp_dict = {"Job": Job,
+                    "Multiplicity": self.Multiplicity,
+                    "Charge": self.Z,
+                    "software": "gaussian",
+                    "Freq": "Harmonic frequencies" in self.raw,
+                    "Functional": self.raw.split("Ex+Corr=")[1].split(" ExCW")[0],
+                    "version": self.raw.split("*********************\n Gaussian")[1].split(":")[0].split()[0],
+                    "BasisSet": self.raw.split("Standard basis:")[1].split("\n")[0].strip().split()[0],
+                    "Solvation": Solv,
+                    "def2J": None,
+                    "RIJCOSX": None,
+                    }
+        
+        return inp_dict
 
     def _read_lines(self):
         """Read the file and store lines for further processing."""
@@ -34,25 +66,6 @@ class GaussianParse(ORCAParse):
             lines = file.readlines()
         return lines
     
-    def parse_atoms(self):
-        atms, line_skip = False, 0
-        for line in self.lines:
-            if 'Charge =  ' in line:
-                atms = True
-                continue
-            if " Redundant internal coordinates found in file.  (old form)." in line:
-                atms = False
-                continue
-            if atms:
-                parts = line.strip().split()
-                if len(parts) == 0:
-                    atms = False
-                    continue
-                atm = parts[0].split("(PDBName")[0]
-                self.atoms.append(atm)
-        for atom in self.atoms:
-            self.masses.append(self.Masses[atom])
-            
 
     def validate_output(self):
         """Validate the Gaussian output file."""
@@ -66,35 +79,49 @@ class GaussianParse(ORCAParse):
                 energy = float(line.split()[4])
                 self.energies = np.append(self.energies, energy)
                 continue
+    
+    def parse_free_energy(self):
+        self.AllGibbs = {}
+        self.entropies = {}
+        self.enthalpies = {}
+        if "Sum of electronic and thermal Free Energies=" not in self.raw:
+            return None
+        
+        for i,block in enumerate(self.coord_blocks):
+            if "Sum of electronic and thermal Free Energies=" in block:
+                G = float(block.split("Sum of electronic and thermal Free Energies=")[1].split("\n")[0])
+                self.AllGibbs[i-1] = G
 
+        self.Gibbs = list(self.AllGibbs.values())[-1]
+        
+        
     def parse_coords(self):
         """Parse the coordinates from each step of the optimization."""
         reading_coordinates, skip_lines = False, 0
-        step_coords = []
+        self.coords = np.ndarray((0,3))
         
-        for line in self.lines:
-            if skip_lines > 0:
-                skip_lines -= 1
-                continue
-            
-            if 'Standard orientation:' in line:
-                if step_coords:
-                    if type(self.coords) is list:
-                        self.coords = np.array(step_coords).reshape(1, -1, 3)
-                    else:
-                        #print(self.coords.shape, np.array(step_coords).reshape(1, -1, 3).shape)
-                        self.coords = np.vstack((  self.coords, np.array(step_coords).reshape(1, -1, 3) ))                       
-                    step_coords = []
-                skip_lines = 4
-                reading_coordinates = True
-                continue
-    
-            if reading_coordinates:
-                if "---------------------------------------------------------------------" in line:
-                    reading_coordinates = False
+        self.split_str = "Standard orientation:" if "Standard orientation:" in self.raw else "Input orientation:"
+        
+        protons = {v: k for k, v in ase.data.atomic_numbers.items()} 
+        
+        self.coord_blocks = self.raw.split(self.split_str)[1:]
+        for block in self.coord_blocks:
+            self.atoms = []
+            self.atomic_numbers = []
+            block = block.split("---------------------------------------------------------------------")[2]
+            for line in block.split("\n"):
+                line = line.split()
+                if len(line) != 6:
                     continue
-    
-                parts = line.strip().split()
-                if len(parts) >= 6: 
-
-                    step_coords.append(list(map(float, parts[3:6])))
+                self.coords = np.vstack((  self.coords, [float(x) for x in line[3:]] ))           
+                self.atomic_numbers.append(int(line[1]))
+                self.atoms.append(protons[int(line[1])])
+                
+        
+        natoms = len(self.atoms)
+        self.coords = self.coords.reshape((-1, natoms, 3))
+        # Sometimes the last one is doubled up in the file
+        if self.coords.shape[0] > 1:
+            if (self.coords[-1] == self.coords[-2]).all():
+                self.coords = np.delete(self.coords, [-1], axis=0)
+        
