@@ -7,10 +7,10 @@ Created on Wed Aug 14 16:55:00 2024
 """
 
 
-from ORCAParse import ORCAParse
+from orca_parser.ORCAParse import *
 import numpy as np
 
-class parse_scan:
+class parse_scan(ORCAParse):
     def __init__(self, file):
         self.op = ORCAParse(file)
         self.op.ValidateOutput()
