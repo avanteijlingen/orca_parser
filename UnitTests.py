@@ -18,7 +18,6 @@ op = ORCAParse("Test-cases/Dipole.out")
 print(op.parse_dipole())
 
 
-sys.exit()
 
 # Gaussian
 gparse = GaussianParse("Test-cases/Gaussian/PPh3.log")
@@ -46,7 +45,7 @@ print(gparse.valid, gparse.coords.shape, gparse.energies.shape)
 assert len(gparse.atoms) == gparse.coords.shape[1]
 gparse.asemol.write("GParse.xyz", append=True)
 
-sys.exit()
+
 
 # AMS
 ams = ams_parse("Test-cases/AMS/133885_xyz.out")
@@ -57,7 +56,7 @@ print(ams.energies)
 print(ams.coords)
 ams.asemol.write("Test-cases/AMS/133885_xyz.xyz")
 
-sys.exit()
+
 
 print("Test-cases/K_partial_crown.out")
 K_partial_crown = ORCAParse("Test-cases/K_partial_crown.out", verbose=True)
@@ -181,9 +180,3 @@ if any(notconv.energy_warnings):
 print(notconv.energies[~notconv.energy_warnings].shape[0])
 
 
-
-
-
-print("ASE mol:")
-
-print(Dipole.asemol)
