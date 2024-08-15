@@ -1,0 +1,112 @@
+   ########################################
+   #                                      #
+   #   WFX format file produced by ORCA   #
+   #                                      #
+   ########################################
+
+
+Warning: this subroutine still in the testing stage. 
+<Title> 
+Name  H2    Run Type  SinglePoint    Method  DFGTO    Basis Set  Gauss 
+</Title> 
+ 
+<Keywords> 
+  GTO 
+</Keywords> 
+ 
+<Number of Nuclei> 
+2 
+</Number of Nuclei> 
+ 
+<Number of Primitives> 
+8 
+</Number of Primitives> 
+ 
+<Number of Occupied Molecular Orbitals> 
+1 
+</Number of Occupied Molecular Orbitals> 
+ 
+<Number of Perturbations> 
+0 
+</Number of Perturbations> 
+ 
+<Nuclear Names> 
+H1 
+H2 
+</Nuclear Names> 
+ 
+<Atomic Numbers> 
+1 
+1 
+</Atomic Numbers> 
+ 
+<Nuclear Charges> 
+ 1.00000000000000E+00 
+ 1.00000000000000E+00 
+</Nuclear Charges> 
+ 
+<Nuclear Cartesian Coordinates> 
+-2.10276251990273E+01  5.48096167882520E+00  0.00000000000000E+00 
+-1.91363872841989E+01  5.25374100848251E+00  0.00000000000000E+00 
+</Nuclear Cartesian Coordinates> 
+ 
+<Net Charge> 
+0.0 
+</Net Charge> 
+ 
+<Number of Electrons> 
+2 
+</Number of Electrons> 
+ 
+<Number of Alpha Electrons> 
+1 
+</Number of Alpha Electrons> 
+ 
+<Number of Beta Electrons> 
+1 
+</Number of Beta Electrons> 
+ 
+<Electronic Spin Multiplicity> 
+1 
+</Electronic Spin Multiplicity> 
+ 
+<Primitive Centers> 
+1  1  1  1  2  2  2  2  
+</Primitive Centers> 
+ 
+<Primitive Types> 
+1  1  1  1  1  1  1  1  
+</Primitive Types> 
+ 
+<Primitive Exponents> 
+ 1.87311370000000E+01  2.82539370000000E+00  6.40121700000000E-01  1.61277800000000E-01  
+ 1.87311370000000E+01  2.82539370000000E+00  6.40121700000000E-01  1.61277800000000E-01  
+</Primitive Exponents> 
+ 
+<Molecular Orbital Occupation Numbers> 
+ 2.00000000000000E+00 
+</Molecular Orbital Occupation Numbers> 
+ 
+<Molecular Orbital Energies> 
+-4.93199549692536E-01 
+</Molecular Orbital Energies> 
+ 
+<Molecular Orbital Spin Types> 
+Alpha and Beta 
+</Molecular Orbital Spin Types> 
+ 
+<Molecular Orbital Primitive Coefficients>
+<MO Number>
+1
+</MO Number>
+ -6.39529953E-02  -1.08476377E-01  -1.23496547E-01  -5.88143412E-02  -6.39529952E-02 
+ -1.08476377E-01  -1.23496547E-01  -5.88143414E-02 
+</Molecular Orbital Primitive Coefficients>
+<Energy = T + Vne + Vee + Vnn> 
+-1.13851927805166E+00 
+</Energy = T + Vne + Vee + Vnn> 
+
+<Virial Ratio (-V/T)> 
+ 2.19736781835720E+00 
+</Virial Ratio (-V/T)> 
+
