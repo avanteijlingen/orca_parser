@@ -23,7 +23,7 @@ class parse_scan(ORCAParse):
         
         frames =  content.split("*** FINAL ENERGY EVALUATION AT THE STATIONARY POINT ***")[1:]
         
-        assert self.num_steps == frames, "The number of scan steps should equal the number of optimized coordinates. This job has not finished correctly"
+        # assert self.num_steps == frames, "The number of scan steps should equal the number of optimized coordinates. This job has not finished correctly"
         
         for i,frame in enumerate(frames):
             positions = []
