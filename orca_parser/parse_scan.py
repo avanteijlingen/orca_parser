@@ -7,7 +7,7 @@ Created on Wed Aug 14 16:55:00 2024
 """
 
 
-from orca_parser.ORCAParse import *
+from . import ORCAParse
 import numpy as np
 
 class parse_scan(ORCAParse):
@@ -15,16 +15,22 @@ class parse_scan(ORCAParse):
         self.op = ORCAParse(file)
         self.op.ValidateOutput()
         
-        self.scan_atoms = []
-        
     def parse_scan_coords(self):
-        content = self.op.raw
-        self.num_steps = int(content.split('%geom Scan', 1)[1].splitlines()[1].split()[-1])
+        """
+        Function to parse a surface scan output from ORCA.
+
+        Returns
+        -------
+        self.scan_atoms: list, the atomic symbols from atoms in the system
+        self.scan_coords: numpy.array, scanned coords from the output of every relaxed optimization calculation in the file. shape (Num_Frames,Num_atoms,3)
+
+        """
         
-        frames =  content.split("*** FINAL ENERGY EVALUATION AT THE STATIONARY POINT ***")[1:]
+        self.scan_atoms = []
+        self.num_steps = int(self.op.raw.split('%geom Scan', 1)[1].splitlines()[1].split()[-1])
         
-        # assert self.num_steps == frames, "The number of scan steps should equal the number of optimized coordinates. This job has not finished correctly"
-        
+        frames =  self.op.raw.split("*** FINAL ENERGY EVALUATION AT THE STATIONARY POINT ***")[1:]
+                
         for i,frame in enumerate(frames):
             positions = []
             
@@ -41,4 +47,21 @@ class parse_scan(ORCAParse):
                 self.scan_coords = np.array(positions).reshape(1, -1, 3)
             else:
                 self.scan_coords = np.vstack((self.scan_coords, np.array(positions).reshape(1, -1, 3)))
-    
+                
+    def parse_scan_energies(self):
+        """
+        Function to return the 'Final Single Point Energy' from each sep of a relaxed surface scan in ORCA.
+        
+        units: Hartree
+
+        Returns
+        -------
+        self.scan_energies: list, list of 'Actual' energies from final energy evaluations at stationary points
+
+        """
+        self.scan_energies = []
+        energies_list = self.op.raw.split("*** OPTIMIZATION RUN DONE ***")[:-1]
+        for energy in energies_list:
+            E = energy.split("\n")[-4]
+            self.scan_energies.append(float(E.split()[-1]))
+                       
