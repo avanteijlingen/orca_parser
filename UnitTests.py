@@ -195,7 +195,6 @@ scan.parse_scan_coords()
 scan.parse_scan_energies()
 print(scan.scan_atoms)
 print(len(scan.scan_coords))
-<<<<<<< HEAD
 print(len(scan.scan_energies))
 scan = parse_scan("Test-cases/Scans/Chloromethane.out")
 scan.parse_scan_coords()
