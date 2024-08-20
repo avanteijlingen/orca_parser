@@ -11,9 +11,9 @@ from . import ORCAParse
 import numpy as np
 
 class parse_scan(ORCAParse):
-    def __init__(self, file):
-        self.op = ORCAParse(file)
-        self.op.ValidateOutput()
+    def __init__(self, fname, verbose = False):
+        super().__init__(fname=fname, verbose=verbose)
+        
         
     def parse_scan_coords(self):
         """
@@ -27,9 +27,9 @@ class parse_scan(ORCAParse):
         """
         
         self.scan_atoms = []
-        self.num_steps = int(self.op.raw.split('%geom Scan', 1)[1].splitlines()[1].split()[-1])
+        self.num_steps = int(self.raw.split('%geom Scan', 1)[1].splitlines()[1].split()[-1])
         
-        frames =  self.op.raw.split("*** FINAL ENERGY EVALUATION AT THE STATIONARY POINT ***")[1:]
+        frames =  self.raw.split("*** FINAL ENERGY EVALUATION AT THE STATIONARY POINT ***")[1:]
                 
         for i,frame in enumerate(frames):
             positions = []
@@ -60,7 +60,7 @@ class parse_scan(ORCAParse):
 
         """
         self.scan_energies = []
-        energies_list = self.op.raw.split("*** OPTIMIZATION RUN DONE ***")[:-1]
+        energies_list = self.raw.split("*** OPTIMIZATION RUN DONE ***")[:-1]
         for energy in energies_list:
             E = energy.split("\n")[-4]
             self.scan_energies.append(float(E.split()[-1]))

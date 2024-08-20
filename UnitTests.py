@@ -8,8 +8,45 @@ import matplotlib.pyplot as plt
 from orca_parser import *
 import ase, sys
 
-# Dipole
 
+# Test the Bond Scan module
+# Test for pulling atoms, number of coords and then number of energies, print the first set of 
+# coords and energies, only the lengths for the rest
+scan = parse_scan("Test-cases/Scans/Chloromethane.out")
+scan.parse_coords()
+scan.parse_scan_coords()
+scan.parse_scan_energies()
+print(scan.scan_atoms)
+print(len(scan.scan_coords))
+print(len(scan.scan_energies))
+scan = parse_scan("Test-cases/Scans/H3O.out")
+scan.parse_scan_coords()
+scan.parse_scan_energies()
+print(scan.scan_atoms)
+print(scan.scan_coords)
+print(len(scan.scan_coords))
+print(len(scan.scan_energies))
+scan = parse_scan("Test-cases/Scans/2-Phenylpyridine_dihedral.out")
+scan.parse_scan_coords()
+scan.parse_scan_energies()
+print(scan.scan_atoms)
+print(len(scan.scan_coords))
+print(len(scan.scan_energies))
+scan = parse_scan("Test-cases/Scans/Dichloroethane.out")
+scan.parse_scan_coords()
+scan.parse_scan_energies()
+print(scan.scan_atoms)
+print(len(scan.scan_coords))
+print(len(scan.scan_energies))
+scan = parse_scan("Test-cases/Scans/Carbene_3_bond_length.out")
+scan.parse_scan_coords()
+scan.parse_scan_energies()
+print(scan.scan_atoms)
+print(len(scan.scan_coords))
+print(len(scan.scan_energies))
+
+
+# Dipole
 op = ORCAParse("Test-cases/Dipole/BisTris_opt.out")
 print(op.parse_dipole())
 op = ORCAParse("Test-cases/Dipole/Single.out")
@@ -180,38 +217,5 @@ if any(notconv.energy_warnings):
 print(notconv.energies[~notconv.energy_warnings].shape[0])
 
 
-# Test the Bond Scan module
-# Test for pulling atoms, number of coords and then number of energies, print the first set of 
-# coords and energies, only the lengths for the rest
-scan = parse_scan("Test-cases/Scans/H3O.out")
-scan.parse_scan_coords()
-scan.parse_scan_energies()
-print(scan.scan_atoms)
-print(scan.scan_coords)
-print(len(scan.scan_coords))
-print(len(scan.scan_energies))
-scan = parse_scan("Test-cases/Scans/2-Phenylpyridine_dihedral.out")
-scan.parse_scan_coords()
-scan.parse_scan_energies()
-print(scan.scan_atoms)
-print(len(scan.scan_coords))
-print(len(scan.scan_energies))
-scan = parse_scan("Test-cases/Scans/Chloromethane.out")
-scan.parse_scan_coords()
-scan.parse_scan_energies()
-print(scan.scan_atoms)
-print(len(scan.scan_coords))
-print(len(scan.scan_energies))
-scan = parse_scan("Test-cases/Scans/Dichloroethane.out")
-scan.parse_scan_coords()
-scan.parse_scan_energies()
-print(scan.scan_atoms)
-print(len(scan.scan_coords))
-print(len(scan.scan_energies))
-scan = parse_scan("Test-cases/Scans/Carbene_3_bond_length.out")
-scan.parse_scan_coords()
-scan.parse_scan_energies()
-print(scan.scan_atoms)
-print(len(scan.scan_coords))
-print(len(scan.scan_energies))
+
 
