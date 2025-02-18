@@ -79,6 +79,34 @@ class GaussianParse(ORCAParse):
                 energy = float(line.split()[4])
                 self.energies = np.append(self.energies, energy)
                 continue
+                
+    def parse_forces(self):
+        """Parse the SCF energies from the output file."""
+        self.parse_coords()
+        self.forces = np.ndarray((0, self.coords.shape[1], 3))
+        reading_forces = False
+        for line in self.lines:
+            if not reading_forces:
+                if "Forces (Hartrees/Bohr)" in line:
+                    reading_forces = True
+                    F = []
+                    continue
+                    
+            if reading_forces:
+                if "Cartesian Forces:" in line:
+                    reading_forces = False
+                    self.forces = np.vstack((self.forces, np.array(F).reshape(1,-1,3)))
+                    continue
+                elif "--------------" in line:
+                    continue
+                elif "Number" in line:
+                    continue
+                elif len(line.split()) == 5:
+                    line = line.split()
+                    x,y,z = line[2:]
+                    xyz = [float(x), float(y), float(z)]
+                    F.append(xyz)
+                
     
     def parse_free_energy(self):
         self.AllGibbs = {}

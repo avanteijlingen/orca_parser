@@ -8,6 +8,9 @@ import matplotlib.pyplot as plt
 from orca_parser import *
 import ase, sys
 
+parser = GaussianParse("Test-cases/Y000.log")
+parser.parse_forces()
+assert parser.forces[0][0][0] == -0.008503919
 
 # Test the Bond Scan module
 # Test for pulling atoms, number of coords and then number of energies, print the first set of 
