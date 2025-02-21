@@ -11,7 +11,7 @@ setup(
     description='A module for parse ORCA output files including hessians (.hess) files',
     long_description=long_description,
     long_description_content_type='text/markdown',
-    url='https://github.com/avanteijlingen/ORCA-Parser',
+    url='https://github.com/avanteijlingen/orca_parser',
     author='Alexander van Teijlingen',
     author_email='a.vant@linuxmail.org',
     license='BSD 2-clause',
