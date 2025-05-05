@@ -8,12 +8,23 @@ import matplotlib.pyplot as plt
 from orca_parser import *
 import ase, sys
 
+# NWChem
+parser = NWChemParse("Test-cases/NWChem/methane.nwout")
+parser.parse()
+for frame in range(len(parser.coords)):
+    mol = parser.makeASE(frame)
+    mol.write("Test-cases/NWChem/methane.xyz", append=(frame > 0))
+
+
+assert len(parser.energies) == len(parser.coords)
+
+
 parser = GaussianParse("Test-cases/Y000.log")
 parser.parse_forces()
 assert parser.forces[0][0][0] == -0.008503919
 
 # Test the Bond Scan module
-# Test for pulling atoms, number of coords and then number of energies, print the first set of 
+# Test for pulling atoms, number of coords and then number of energies, print the first set of
 # coords and energies, only the lengths for the rest
 scan = parse_scan("Test-cases/Scans/Chloromethane.out")
 scan.parse_coords()
@@ -58,7 +69,6 @@ op = ORCAParse("Test-cases/Dipole.out")
 print(op.parse_dipole())
 
 
-
 # Gaussian
 gparse = GaussianParse("Test-cases/Gaussian/PPh3.log")
 gparse.parse_coords()
@@ -67,7 +77,7 @@ print(gparse.valid, gparse.coords.shape, gparse.energies.shape)
 assert len(gparse.atoms) == gparse.coords.shape[1]
 for i in range(gparse.coords.shape[0]):
     mol = Atoms(gparse.atoms, gparse.coords[i])
-    mol.write("GParse.xyz", append = (i>0))
+    mol.write("GParse.xyz", append=(i > 0))
 
 
 gparse = GaussianParse("Test-cases/Gaussian/ox2.out")
@@ -86,7 +96,6 @@ assert len(gparse.atoms) == gparse.coords.shape[1]
 gparse.asemol.write("GParse.xyz", append=True)
 
 
-
 # AMS
 ams = ams_parse("Test-cases/AMS/133885_xyz.out")
 ams.parse_energies()
@@ -95,7 +104,6 @@ print(ams.valid)
 print(ams.energies)
 print(ams.coords)
 ams.asemol.write("Test-cases/AMS/133885_xyz.xyz")
-
 
 
 print("Test-cases/K_partial_crown.out")
@@ -151,14 +159,12 @@ print(H2O.entropies)
 print(H2O.enthalpies)
 
 
-
-#Hess = HessianTools("Test-cases/COO/COO.hess")
+# Hess = HessianTools("Test-cases/COO/COO.hess")
 Hess = HessianTools("Test-cases/Coordination_0.hess")
-#print(Hess.normalmodes)
-#Hess.normalmodes.to_csv("Test.csv")
+# print(Hess.normalmodes)
+# Hess.normalmodes.to_csv("Test.csv")
 print(Hess.IR.iloc[20])
 Hess.WriteMode("NormalMode_20.xyz", 20, steps=50)
-
 
 
 print("Phenol")
@@ -167,7 +173,6 @@ Optimization = ORCAParse("Test-cases/Phenol/Opt.out")
 print("ORCA exited normally:", Optimization.valid)
 print("Job took:", Optimization.seconds(), "seconds")
 print("Job input line:", Optimization.parse_input())
-
 
 
 Optimization.parse_coords()
@@ -186,8 +191,8 @@ TDDFT.parse_absorption()
 print("Wavelengths:", TDDFT.wavelengths)
 TDDFT.parse_CD()
 print("CD Wavelengths:", TDDFT.CD)
-X, Y = [],[]
-for nm,r in zip(TDDFT.CD, TDDFT.R):
+X, Y = [], []
+for nm, r in zip(TDDFT.CD, TDDFT.R):
     X.append(nm)
     Y.append(0)
     X.append(nm)
@@ -210,7 +215,6 @@ print("Meisenheimer Complex entropies:", Optimization.entropies)
 print("Meisenheimer Complex enthalpies:", Optimization.enthalpies)
 
 
-
 ### We can use energy warnings to check for things like a wavefunction not being fully converged:
 notconv = ORCAParse("Test-cases/cpcm_opt.out")
 notconv.parse_energies()
@@ -218,7 +222,3 @@ print(notconv.energies.shape[0])
 if any(notconv.energy_warnings):
     print("Unconverged energies found, removing them")
 print(notconv.energies[~notconv.energy_warnings].shape[0])
-
-
-
-

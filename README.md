@@ -27,17 +27,48 @@ print(Optimization.coords[-1])
 ### Requirements:
 [ase](https://gitlab.com/ase/ase), numpy, pandas
 
-# Orca parser contains two classes:
+# Orca parser contains different classes for different types of QM output:
 
-#### ORCAParse
-Reads orca output streams (.out/.log/etc)
+### ORCAParse (Orca 5+)
+Reads orca output streams (.out/.log/.hess)
 Can read frequencies, atoms, coordinates, IR spectra, free energy (broken down into its components as well)
 Can also tell you how the job finished, if it converged etc
+
+Reads:
+ - Energies & Free Energies
+ - Forces
+ - Coordinates
+ - Spectra
+ - Dipoles
+ - etc
 
 #### HessianTools
 Reads orca Hessian (.hess) outputs
 Can parse the atoms and coordinates, normal modes, IR spectra.
 From this .xyz trajectories of normal modes can be written
+
+### GaussianParse (Gaussian 16) 
+Reads Gaussian output streams (.out, .log etc)
+
+Reads:
+ - Energies & Free Energies
+ - Forces
+ - Coordinates
+
+### ams_parse (Amsterdam Modeling Suite)
+
+Reads:
+ - Energies 
+ - Coordinates
+
+### NWChem (NWChem 7+)
+
+Introduced the .parse() function for this one so you dont have to do .parse_coords() .parse_energies() etc
+
+Reads:
+ - Energies 
+ - Coordinates
+
 
 ## Usage:
 Example usage can be found in Usage.py, along with example ORCA output files in the "Test-cases" folder.
