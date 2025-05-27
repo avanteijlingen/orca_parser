@@ -9,6 +9,13 @@ from orca_parser import *
 import ase, sys
 
 # NWChem
+parser = NWChemParse("Test-cases/NWChem/MetalIon.nwout")
+parser.parse()
+print("Energy:", parser.energies)
+print("coords:", parser.coords)
+print("atoms:", parser.atoms)
+sys.exit()
+
 parser = NWChemParse("Test-cases/NWChem/methane.nwout")
 parser.parse()
 for frame in range(len(parser.coords)):

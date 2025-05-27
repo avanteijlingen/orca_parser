@@ -42,6 +42,14 @@ class NWChemParse(ORCAParse):
     def parse_coords(self):
         self.parse()
 
+    def parse_COSMO(self):
+        self.cosmo_energies = []
+        for line in self.raw.split("\n"):
+            if "COSMO energy =" in line:
+                self.cosmo_energies.append(
+                    float(line.split("COSMO energy =")[1].split("\n")[0])
+                )
+
     def parse(self):
         """
         Parse the coordinates from each step of the optimization.
@@ -53,38 +61,65 @@ class NWChemParse(ORCAParse):
         self.atoms = []
         self.energies = []
         self.atomic_numbers = []
+        self.parse_COSMO()
 
-        # Get energy
-        for line in self.raw.split("\n"):
-            if len(line) == 0:
-                continue
+        if "@" in self.raw:
+            # This is an optimization
 
-            if line[0] == "@":
-                if line.split()[2] == "Energy" or line.split()[2] == "----------------":
+            # Get energy
+            for line in self.raw.split("\n"):
+                if len(line) == 0:
                     continue
-                E = float(line.split()[2])
-                self.energies.append(E)
 
-        blocks = self.raw.split("Output coordinates in angstroms")
-        for iblock, block in enumerate(blocks[1:]):
-            positions = np.ndarray((0, 3))
-            block = (
-                block.split("Atomic Mass")[0].split("--------------")[-1].split("\n")
+                if line[0] == "@":
+                    if (
+                        line.split()[2] == "Energy"
+                        or line.split()[2] == "----------------"
+                    ):
+                        continue
+                    E = float(line.split()[2])
+                    self.energies.append(E)
+
+            blocks = self.raw.split("Output coordinates in angstroms")
+            for iblock, block in enumerate(blocks[1:]):
+                positions = np.ndarray((0, 3))
+                block = (
+                    block.split("Atomic Mass")[0]
+                    .split("--------------")[-1]
+                    .split("\n")
+                )
+                for line in block:
+                    line = line.split()
+                    if len(line) < 4:
+                        continue
+                    index, element, mass, x, y, z = line
+                    if iblock == 0:
+                        self.atoms.append(element)
+                        self.atomic_numbers.append(mass)
+                    xyz = np.array([float(x), float(y), float(z)]).reshape(1, 3)
+                    positions = np.vstack((positions, xyz))
+                self.coords.append(positions)
+            self.coords = np.array(self.coords)
+            if len(self.coords) > 1:
+                if (self.coords[0] == self.coords[1]).all():
+                    self.coords = self.coords[1:]
+                if (self.coords[-2] == self.coords[-1]).all():
+                    self.coords = self.coords[:-1]
+                    self.energies = self.energies[:-1]
+        else:
+            # This might be a single point energy
+            self.energies.append(
+                float(self.raw.split("Total DFT energy =")[1].split("\n")[0])
             )
-            for line in block:
-                line = line.split()
-                if len(line) < 4:
+            positions = np.ndarray((0, 3))
+            for line in (
+                self.raw.split("XYZ format geometry")[1].split("Basis")[0].split("\n")
+            ):
+                line = line.strip().split()
+                if len(line) != 4:
                     continue
-                index, element, mass, x, y, z = line
-                if iblock == 0:
-                    self.atoms.append(element)
-                    self.atomic_numbers.append(mass)
+                element, x, y, z = line
+                self.atoms.append(element)
                 xyz = np.array([float(x), float(y), float(z)]).reshape(1, 3)
                 positions = np.vstack((positions, xyz))
             self.coords.append(positions)
-        self.coords = np.array(self.coords)
-        if (self.coords[0] == self.coords[1]).all():
-            self.coords = self.coords[1:]
-        if (self.coords[-2] == self.coords[-1]).all():
-            self.coords = self.coords[:-1]
-            self.energies = self.energies[:-1]
