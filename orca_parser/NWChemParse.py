@@ -1,10 +1,5 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
-Created on [Current Date]
-
-@author: [Your Name]
-"""
 
 import numpy as np
 import ase
@@ -15,29 +10,18 @@ from .ORCAParse import tricky_readin
 class NWChemParse(ORCAParse):
     def ValidateOutput(self):
         """Validate the NWChem output file."""
-        self.valid = False
+        self.valid = True
+        self.clean_stop = False
         if "Total times" in self.raw:  # NWChem typically ends with timing information
             if "Task times" in self.raw:
-                self.valid = True
+                self.clean_stop = True
 
     def __init__(self, fname, verbose=False):
         super().__init__(fname, verbose=verbose)
         self.filepath = fname
         self.raw = tricky_readin(fname)
-        if self.validate_output():
-            self.valid = True
-            if self.verbose:
-                print("File terminated Normally")
-        else:
-            self.valid = False
-            if self.verbose:
-                print(
-                    "The NWChem output file did not terminate normally or is not valid."
-                )
-
-    def validate_output(self):
-        """Validate the NWChem output file."""
-        return "Total times" in self.raw
+        self.net_charge = None
+        self.ValidateOutput()
 
     def parse_coords(self):
         self.parse()
@@ -49,6 +33,33 @@ class NWChemParse(ORCAParse):
                 self.cosmo_energies.append(
                     float(line.split("COSMO energy =")[1].split("\n")[0])
                 )
+
+    def parse_net_charge(self):
+        return int(self.raw.split("Charge           :")[1].split("\n")[0].strip())
+
+    def parse_multiplicity(self):
+        return int(self.raw.split("Spin multiplicity:")[1].split("\n")[0].strip())
+
+    def isSMD(self):
+        return "COSMO-SMD solvation results" in self.raw
+
+    def get_functional(self):
+        if "MN15 Method XC Functional" in self.raw:
+            return "MN15"
+        elif "PBE0 Method XC Functional" in self.raw:
+            return "PBE0"
+        else:
+            return None
+
+    def get_basis_sets(self):
+        self.RaBasis = None
+        self.orgBasis = None
+        if "Ra                        crenbl" in self.raw:
+            self.RaBasis = "crenbl_ecp"
+        if "   def2-SVP  " in self.raw:
+            self.orgBasis = "def2-SVP"
+        if "   def2-TZVPP  " in self.raw:
+            self.orgBasis = "def2-TZVPP"
 
     def parse(self):
         """
@@ -62,6 +73,11 @@ class NWChemParse(ORCAParse):
         self.energies = []
         self.atomic_numbers = []
         self.parse_COSMO()
+        self.net_charge = self.parse_net_charge()
+        self.multiplicity = self.parse_multiplicity()
+        self.SMD = self.isSMD()
+        self.functional = self.get_functional()
+        self.get_basis_sets()
 
         if "@" in self.raw:
             # This is an optimization
@@ -123,3 +139,15 @@ class NWChemParse(ORCAParse):
                 xyz = np.array([float(x), float(y), float(z)]).reshape(1, 3)
                 positions = np.vstack((positions, xyz))
             self.coords.append(positions)
+
+    def get_data(self):
+        if self.net_charge is None:
+            self.parse()
+        return {
+            "charge": self.net_charge,
+            "multiplicity": self.multiplicity,
+            "SMD": self.SMD,
+            "functional": self.functional,
+            "orgBasis": self.orgBasis,  # This should be the original basis set used for the calculation
+            "RaBasis": self.RaBasis,  # This should be the auxiliary basis set used for the calculation
+        }
