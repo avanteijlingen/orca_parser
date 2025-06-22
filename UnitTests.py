@@ -14,7 +14,7 @@ parser.parse()
 print("Energy:", parser.energies)
 print("coords:", parser.coords)
 print("atoms:", parser.atoms)
-sys.exit()
+
 
 parser = NWChemParse("Test-cases/NWChem/methane.nwout")
 parser.parse()
@@ -150,6 +150,8 @@ print("Cl2")
 Cl2 = ORCAParse("Test-cases/Cl2.out")
 assert Cl2.valid, "This file is invalid"
 print(Cl2.parse_input())
+Cl2.parse()
+assert Cl2.input_dict["ECP"] == False
 
 print("Coordination_0")
 Coordination_0 = ORCAParse("Test-cases/Coordination_0.out")
@@ -229,3 +231,12 @@ print(notconv.energies.shape[0])
 if any(notconv.energy_warnings):
     print("Unconverged energies found, removing them")
 print(notconv.energies[~notconv.energy_warnings].shape[0])
+
+
+NoECP = ORCAParse("Test-cases/cpcm_opt.out")
+NoECP.parse()
+print(NoECP.input_dict)
+assert NoECP.input_dict["ECP"] == False
+
+print("*" * 90)
+print("PASSED ALL TESTS")

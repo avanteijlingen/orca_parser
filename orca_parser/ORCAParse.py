@@ -135,6 +135,34 @@ class ORCAParse:
         # Search for the INNER ENERGY section
         pass
 
+    def parse(self):
+        if "DIPOLE MOMENT" in self.raw:
+            self.parse_dipole()
+        if "FINAL SINGLE POINT ENERGY" in self.raw:
+            self.parse_energies()
+        if "Dispersion correction" in self.raw:
+            self.parse_dispersion()
+        if "CARTESIAN COORDINATES" in self.raw:
+            self.parse_coords()
+        if "VIBRATIONAL FREQUENCIES" in self.raw:
+            self.parse_freqs()
+        if "IR SPECTRUM" in self.raw:
+            self.parse_IR()
+        if "Gibbs free energy" in self.raw:
+            self.parse_free_energy()
+        if "ORBITAL ENERGIES" in self.raw:
+            self.parse_HOMO_LUMO()
+        if "END OF INPUT" in self.raw:
+            self.input_dict = self.parse_input()
+        if "convergence" in self.raw:
+            self.convergence()
+        if "ABSORPTION SPECTRUM VIA TRANSITION" in self.raw:
+            self.parse_absorption()
+        if "CD SPECTRUM" in self.raw:
+            self.parse_CD()
+        if "MULLIKEN ATOMIC CHARGES" in self.raw:
+            self.parse_charges()
+
     def parse_dipole(self):
         assert "DIPOLE MOMENT" in self.raw
         dipoles = []
@@ -180,6 +208,8 @@ class ORCAParse:
         for i in range(len(splits)):
             E_disp = splits[i].split("\n")[0].strip()
             if "Starting D4" in E_disp:  # Not a results line
+                continue
+            elif "... done" in E_disp:  # Not a results line
                 continue
             self.dispersions[i] = float(E_disp)
 
@@ -363,6 +393,8 @@ class ORCAParse:
             "Multiplicity": self.Multiplicity,
             "version": self.orca_version,
             "software": "ORCA",
+            "UKS": "UKS" in self.raw.split("|  1>")[1].split("\n")[0],
+            "ECP": "ECP gradient" in self.raw,
         }
 
         # Finicky functionals
@@ -508,7 +540,7 @@ class ORCAParse:
     def parse_charges(self):
         self.charges = {"Mulliken": [], "Loewdin": [], "Mayer": []}
         txt = self.raw.split("MULLIKEN ATOMIC CHARGES")[-1]
-        txt = txt.split("Sum of atomic charges:")[0]
+        txt = txt.split("Sum of atomic charges")[0]
         for line in txt.split("\n"):
             if ":" in line:
                 self.charges["Mulliken"].append(float(line.split()[-1]))
