@@ -136,6 +136,22 @@ class ORCAParse:
         pass
 
     def parse(self):
+        if "Global Optimization Algorithm" in self.raw:
+            self.GOAT = True
+        else:
+            self.GOAT = False
+        if "xtb is free software" in self.raw:
+            self.XTB = True
+        else:
+            self.XTB = False
+
+        if self.XTB:
+            self.Z = float(self.raw.split(":: total charge")[1].split("e")[0])
+            self.orca_version = self.raw.split("Program Version ")[1].split()[0]
+        else:
+            if "END OF INPUT" in self.raw:
+                self.input_dict = self.parse_input()
+
         if "DIPOLE MOMENT" in self.raw:
             self.parse_dipole()
         if "FINAL SINGLE POINT ENERGY" in self.raw:
@@ -152,8 +168,7 @@ class ORCAParse:
             self.parse_free_energy()
         if "ORBITAL ENERGIES" in self.raw:
             self.parse_HOMO_LUMO()
-        if "END OF INPUT" in self.raw:
-            self.input_dict = self.parse_input()
+
         if "convergence" in self.raw:
             self.convergence()
         if "ABSORPTION SPECTRUM VIA TRANSITION" in self.raw:
