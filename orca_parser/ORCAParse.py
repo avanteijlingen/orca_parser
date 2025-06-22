@@ -177,16 +177,17 @@ class ORCAParse:
                 "Magnitude (a.u.)",
                 "Magnitude (Debye)",
             ]:
-                dipole[part] = (
-                    section.split(part)[1].split(":")[1].split("\n")[0].split()
-                )
-                dipole[part] = [float(x) for x in dipole[part]]
+                try:
+                    dipole[part] = (
+                        section.split(part)[1].split(":")[1].split("\n")[0].split()
+                    )
+                    dipole[part] = [float(x) for x in dipole[part]]
+                except:
+                    dipole[part] = None
+
             dipoles.append(dipole)
 
-        if len(dipoles) == 1:
-            return dipole
-        else:
-            return dipoles
+        return dipoles
 
     def parse_energies(self):
         self.energies = np.ndarray((0,), np.float64)

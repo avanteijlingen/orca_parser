@@ -1,0 +1,23 @@
+! B3LYP def-TZVP opt FREQ TightSCF DEFGRID2 
+
+%pal
+  nprocs 16
+end
+
+
+%scf
+  MaxIter 500
+  ConvForced true
+  # Break spin symmetry for heavy metal system
+  guess hcore
+end
+
+%geom
+  MaxIter 200
+end
+
+
+* xyz 0 3
+O 0.0 0.0 0.0
+O 0.0 0.0 1.207
+*
