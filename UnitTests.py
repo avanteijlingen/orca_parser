@@ -16,6 +16,7 @@ print("Energy:", parser.energies)
 print("coords:", parser.coords.shape)
 print("atoms:", parser.atoms)
 assert parser.coords.shape[0] == 50
+print(parser.energies.shape)
 assert parser.energies.shape[0] == 50
 
 
@@ -142,6 +143,10 @@ H2O = ORCAParse("Test-cases/H2O.out")
 assert H2O.valid, "This file is invalid"
 print(H2O.parse_input())
 
+H2O.parse_energies()
+H2O.parse_free_energy()
+assert -0.002634228 in H2O.dispersions
+
 
 print("Phenol")
 Phenol = ORCAParse("Test-cases/Phenol/Opt.out")
@@ -168,15 +173,6 @@ print("Coordination_0")
 Coordination_0 = ORCAParse("Test-cases/Coordination_0.out")
 assert Coordination_0.valid, "This file is invalid"
 print(Coordination_0.parse_input())
-
-
-H2O.parse_energies()
-H2O.parse_free_energy()
-
-print(H2O.energies)
-print(H2O.AllGibbs)
-print(H2O.entropies)
-print(H2O.enthalpies)
 
 
 # Hess = HessianTools("Test-cases/COO/COO.hess")
@@ -225,8 +221,9 @@ plt.xlabel("Wavelength (nm)")
 print("\n")
 print("Meisenheimer Complex")
 Optimization = ORCAParse("Test-cases/MeisenheimerComplex.out")
-Optimization.parse_dispersion()
+Optimization.parse_energies()
 print("Meisenheimer Complex D4 energy:", Optimization.dispersions[-1])
+assert Optimization.dispersions[-1] == -0.001713565
 Optimization.parse_free_energy()
 print("Meisenheimer Complex Gibbs free energy:", Optimization.AllGibbs)
 

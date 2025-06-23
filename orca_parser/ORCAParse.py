@@ -156,8 +156,6 @@ class ORCAParse:
             self.parse_dipole()
         if "FINAL SINGLE POINT ENERGY" in self.raw:
             self.parse_energies()
-        if "Dispersion correction" in self.raw:
-            self.parse_dispersion()
         if "CARTESIAN COORDINATES" in self.raw:
             self.parse_coords()
         if "IR SPECTRUM" in self.raw:
@@ -166,7 +164,6 @@ class ORCAParse:
             self.parse_free_energy()
         if "ORBITAL ENERGIES" in self.raw:
             self.parse_HOMO_LUMO()
-
         if "convergence" in self.raw:
             self.convergence()
         if "ABSORPTION SPECTRUM VIA TRANSITION" in self.raw:
@@ -204,8 +201,18 @@ class ORCAParse:
 
     def parse_energies(self):
         self.energies = np.ndarray((0,), np.float64)
+        self.dispersions = np.ndarray((0,), np.float64)
         self.energy_warnings = np.ndarray((0,), np.bool_)
-        for part in self.raw.split("FINAL SINGLE POINT ENERGY")[1:]:
+        split = self.raw.split("FINAL SINGLE POINT ENERGY")
+        for i in range(1, len(split)):
+            disp_part = self.raw.split("FINAL SINGLE POINT ENERGY")[i - 1]
+            if "Dispersion correction" in disp_part:
+                disp_part = disp_part.split("Dispersion correction")[-1].strip()
+                disp = disp_part.split("\n")[0]
+                disp = float(disp)
+                self.dispersions = np.hstack((self.dispersions, [disp]))
+
+            part = self.raw.split("FINAL SINGLE POINT ENERGY")[i]
             part = part.split("\n")[0].strip()
             if "(Wavefunction not fully converged!)" in part:
                 part = part.split()[0]
@@ -214,18 +221,6 @@ class ORCAParse:
                 self.energy_warnings = np.hstack((self.energy_warnings, [False]))
             part = float(part)
             self.energies = np.hstack((self.energies, [part]))
-        # self.r_energies = self.energies - self.energies.min()
-
-    def parse_dispersion(self):
-        splits = self.raw.split("\nDispersion correction")[1:]
-        self.dispersions = np.ndarray((len(splits),))
-        for i in range(len(splits)):
-            E_disp = splits[i].split("\n")[0].strip()
-            if "Starting D4" in E_disp:  # Not a results line
-                continue
-            elif "... done" in E_disp:  # Not a results line
-                continue
-            self.dispersions[i] = float(E_disp)
 
     def parse_coords(self):
         self.coords = []
@@ -583,6 +578,10 @@ class ORCAParse:
         self.coords = []
         self.atoms = []
         self.masses = []
+        self.AllGibbs = {}
+        self.frequencies = {}
+        self.entropies = {}
+        self.enthalpies = {}
         self.Masses = {
             "H": 1.008,
             "He": 4.003,
