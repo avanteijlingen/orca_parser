@@ -160,8 +160,6 @@ class ORCAParse:
             self.parse_dispersion()
         if "CARTESIAN COORDINATES" in self.raw:
             self.parse_coords()
-        if "VIBRATIONAL FREQUENCIES" in self.raw:
-            self.parse_freqs()
         if "IR SPECTRUM" in self.raw:
             self.parse_IR()
         if "Gibbs free energy" in self.raw:
@@ -260,25 +258,6 @@ class ORCAParse:
             distances[i] = d
         return distances
 
-    def parse_freqs(self):
-        self.frequencies = []
-        frames = self.raw.split("VIBRATIONAL FREQUENCIES")[1:]
-        for i, frame in enumerate(frames):
-            frequencies = []
-            frame = frame.split("NORMAL MODES")[0]
-            for line in frame.split("\n"):
-                if "cm" not in line:
-                    continue
-                line = line.split()
-                freq = float(line[1])
-                frequencies.append(freq)
-            if i == 0:
-                self.frequencies = np.array(frequencies).reshape(1, -1)
-            else:
-                self.frequencies = np.vstack(
-                    (self.frequencies, np.array(frequencies).reshape(1, -1))
-                )
-
     def parse_IR(self):
         self.IR = pandas.DataFrame(
             columns=["freq", "eps", "Int", "T**2", "TX", "TY", "TZ"]
@@ -308,6 +287,7 @@ class ORCAParse:
             self.symmetry_number = 2
 
         self.AllGibbs = {}
+        self.frequencies = {}
         self.entropies = {}
         self.enthalpies = {}
 
@@ -317,6 +297,18 @@ class ORCAParse:
         frames = self.raw.split("GEOMETRY OPTIMIZATION CYCLE")
 
         for i, frame in enumerate(frames):
+            if "VIBRATIONAL FREQUENCIES" in frame:
+                frequencies = []
+                vibframe = frame.split("VIBRATIONAL FREQUENCIES")[1]
+                vibframe = vibframe.split("NORMAL MODES")[0]
+                for line in vibframe.split("\n"):
+                    if "cm" not in line:
+                        continue
+                    line = line.split()
+                    freq = float(line[1])
+                    frequencies.append(freq)
+                self.frequencies[i] = frequencies
+
             if "Final Gibbs free energy" in frame:
                 G = frame.split("Final Gibbs free energy         ...")[1].split("Eh")[0]
                 H = frame.split("Total enthalpy                    ...")[1].split("Eh")[

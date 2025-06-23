@@ -228,9 +228,11 @@ Optimization = ORCAParse("Test-cases/MeisenheimerComplex.out")
 Optimization.parse_dispersion()
 print("Meisenheimer Complex D4 energy:", Optimization.dispersions[-1])
 Optimization.parse_free_energy()
-print("Meisenheimer Complex Gibbs free energy:", Optimization.Gibbs)
-Optimization.parse_freqs()
+print("Meisenheimer Complex Gibbs free energy:", Optimization.AllGibbs)
+
 print("Meisenheimer Complex Frequencies:", Optimization.frequencies)
+assert 25 in Optimization.frequencies
+assert 3185.23 in Optimization.frequencies[25]
 print("Meisenheimer Complex entropies:", Optimization.entropies)
 print("Meisenheimer Complex enthalpies:", Optimization.enthalpies)
 
