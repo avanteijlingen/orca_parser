@@ -408,6 +408,11 @@ class ORCAParse:
             and "Correlation Functional Correlation     .... LYP" in self.raw
         ):
             inp_dict["Functional"] = "B3LYP"
+        elif (
+            "Functional name                       .... wB97M-V exchange-correlation functional"
+            in self.raw
+        ):
+            inp_dict["Functional"] = "wB97M-V"
         else:
             inp_dict["Functional"] = (
                 self.raw.split("Exchange Functional    Exchange        ....")[1]
