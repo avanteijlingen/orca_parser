@@ -136,6 +136,7 @@ class ORCAParse:
         pass
 
     def parse(self):
+        self.orca_version = self.raw.split("Program Version ")[1].split()[0]
         if "Global Optimization Algorithm" in self.raw:
             self.GOAT = True
         else:
@@ -148,6 +149,10 @@ class ORCAParse:
         if self.XTB:
             self.Z = float(self.raw.split(":: total charge")[1].split("e")[0])
             self.orca_version = self.raw.split("Program Version ")[1].split()[0]
+            inp = self.raw.split("INPUT FILE")[1].split("****END OF INPUT****")[0]
+            inp = inp.split("|  1> !")[1].split("\n")[0]
+            self.input_line = inp.split()
+            self.input_dict = self.parse_input()
         else:
             if "END OF INPUT" in self.raw:
                 self.input_dict = self.parse_input()
@@ -365,19 +370,38 @@ class ORCAParse:
         return seconds
 
     def parse_input(self):
-        self.Z = int(
-            self.raw.split("Total Charge           Charge          ....")[1].split(
-                "\n"
-            )[0]
-        )
-        self.Multiplicity = int(
-            self.raw.split("Multiplicity           Mult            ....")[1].split(
-                "\n"
-            )[0]
-        )
-        self.orca_version = self.raw.split("Program Version ")[1].split()[0]
+        self.opt_fin = "OPTIMIZATION RUN DONE" in self.raw
+        try:
+            self.Z = int(
+                self.raw.split("Total Charge           Charge          ....")[1].split(
+                    "\n"
+                )[0]
+            )
+        except:
+            self.Z = int(self.raw.split(":  net charge         ")[1].split(":")[0])
+
+        if self.XTB:
+            self.Multiplicity = int(
+                self.raw.split("> * xyz")[1].split("\n")[0].split()[-1]
+            )
+
+            inp_dict = {
+                "Charge": self.Z,
+                "Multiplicity": self.Multiplicity,
+                "version": self.orca_version,
+                "software": "ORCA",
+            }
+            return inp_dict
+        else:
+            self.Multiplicity = int(
+                self.raw.split("Multiplicity           Mult            ....")[1].split(
+                    "\n"
+                )[0]
+            )
+
         inp = self.raw.split("INPUT FILE")[1].split("****END OF INPUT****")[0]
-        inp = inp.split("> !")[1].split("\n")[0]
+        inp = inp.split("|  1> !")[1].split("\n")[0]
+        self.input_line = inp.split()
         inp = inp.upper()
         inp = inp.replace("!", "")
         inp_dict = {
@@ -401,25 +425,28 @@ class ORCAParse:
         }
 
         # Finicky functionals
-        if "HF-3C" in inp:
-            inp_dict["Functional"] = "HF"
-        elif (
-            "Exchange Functional    Exchange        .... B88" in self.raw
-            and "Correlation Functional Correlation     .... LYP" in self.raw
-        ):
-            inp_dict["Functional"] = "B3LYP"
-        elif (
-            "Functional name                       .... wB97M-V exchange-correlation functional"
-            in self.raw
-        ):
-            inp_dict["Functional"] = "wB97M-V"
-        else:
-            inp_dict["Functional"] = (
-                self.raw.split("Exchange Functional    Exchange        ....")[1]
-                .split("\n")[0]
-                .rstrip()
-                .replace(" ", "")
-            )
+        try:
+            if "HF-3C" in inp:
+                inp_dict["Functional"] = "HF"
+            elif (
+                "Exchange Functional    Exchange        .... B88" in self.raw
+                and "Correlation Functional Correlation     .... LYP" in self.raw
+            ):
+                inp_dict["Functional"] = "B3LYP"
+            elif (
+                "Functional name                       .... wB97M-V exchange-correlation functional"
+                in self.raw
+            ):
+                inp_dict["Functional"] = "wB97M-V"
+            else:
+                inp_dict["Functional"] = (
+                    self.raw.split("Exchange Functional    Exchange        ....")[1]
+                    .split("\n")[0]
+                    .rstrip()
+                    .replace(" ", "")
+                )
+        except:
+            inp_dict["Functional"] = None
 
         # Dispersion
         if "DFT DISPERSION CORRECTION" in self.raw:
@@ -477,9 +504,10 @@ class ORCAParse:
             elif eps == 36.6 and refrac == 1.344:
                 inp_dict["Solvation"] = "CPCM(Acetonitrile)"
             else:
-                print(
-                    f"Couldnt assign CPCM solvent from eps = {eps} and refrac = {refrac}"
-                )
+                # print(
+                #     f"Couldnt assign CPCM solvent from eps = {eps} and refrac = {refrac}"
+                # )
+                pass
 
         return inp_dict
 
