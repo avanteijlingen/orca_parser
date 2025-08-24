@@ -5,7 +5,7 @@ Created on Thu Jul  6 10:37:13 2023
 @author: Alex
 """
 import numpy as np
-import ase, pandas, os
+import ase, pandas, os, sys
 from ase.io import read
 from ase import Atoms
 
@@ -287,6 +287,7 @@ class ORCAParse:
             self.symmetry_number = 2
 
         self.AllGibbs = {}
+        self.forces = {}
         self.frequencies = {}
         self.entropies = {}
         self.enthalpies = {}
@@ -320,6 +321,21 @@ class ORCAParse:
                 self.AllGibbs[i] = float(G)
                 self.enthalpies[i] = float(H)
                 self.entropies[i] = float(S)
+
+            if "CARTESIAN GRADIENT" in frame:
+                force = []
+                grad = frame.split("CARTESIAN GRADIENT")[1].split(
+                    "Difference to translation invariance"
+                )[0]
+                for line in grad.split("\n"):
+                    line = line.split()
+                    if len(line) < 4:
+                        continue
+                    x, y, z = line[-3:]
+                    x, y, z = float(x), float(y), float(z)
+                    force.append([x, y, z])
+                self.forces[i] = np.array(force)
+
         self.Gibbs = list(self.AllGibbs.values())[-1]
 
     def parse_HOMO_LUMO(self):
