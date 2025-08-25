@@ -628,6 +628,7 @@ class ORCAParse:
         self.atoms = []
         self.masses = []
         self.AllGibbs = {}
+        self.forces = {}
         self.frequencies = {}
         self.entropies = {}
         self.enthalpies = {}
