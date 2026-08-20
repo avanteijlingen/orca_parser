@@ -34,13 +34,18 @@ class parse_scan(ORCAParse):
         for i,frame in enumerate(frames):
             positions = []
             
-            part = frame.split("CARTESIAN COORDINATES (ANGSTROEM)")[1:]
-            part = frame.split("CARTESIAN COORDINATES (A.U.)")[0]
+            part = frame.split("CARTESIAN COORDINATES (ANGSTROEM)")[1]
+            part = part.split("CARTESIAN COORDINATES (A.U.)")[0]
             for line in part.split("\n"):
                 line = line.split()
                 if len(line) != 4:
                     continue
-                positions.append([float(x) for x in line[1:]])
+                try:
+                    xyz = [float(x) for x in line[1:]]
+                except ValueError:
+                    # table rulers etc. can also have 4 fields, skip them
+                    continue
+                positions.append(xyz)
                 if i == 0:
                     self.scan_atoms.append(line[0])
             if i == 0:

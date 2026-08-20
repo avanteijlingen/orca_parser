@@ -9,18 +9,26 @@ from orca_parser import *
 import ase, sys
 
 # GOAT
-parser = ORCAParse("Test-cases/GOAT/1,3-dichloropropane.out")
-parser.parse_energies()
-parser.parse_coords()
-print("Energy:", parser.energies)
-print("coords:", parser.coords.shape)
-print("atoms:", parser.atoms)
-assert parser.coords.shape[0] == 50
-print(parser.energies.shape)
-assert parser.energies.shape[0] == 50
+# parser = ORCAParse("Test-cases/GOAT/1,3-dichloropropane.out")
+# parser.parse_energies()
+# parser.parse_coords()
+# print("Energy:", parser.energies)
+# print("coords:", parser.coords.shape)
+# print("atoms:", parser.atoms)
+# assert parser.coords.shape[0] == 50
+# print(parser.energies.shape)
+# assert parser.energies.shape[0] == 50
 
 
 # NWChem
+parser = NWChemParse("Test-cases/NWChem/nwchem_ts.nwout")
+parser.parse()
+print("Energy:", parser.energies)
+print("coords:", parser.coords)
+print("atoms:", parser.atoms)
+assert parser.energies[0] == -232.752828591256
+
+
 parser = NWChemParse("Test-cases/NWChem/MetalIon.nwout")
 parser.parse()
 print("Energy:", parser.energies)

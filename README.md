@@ -1,8 +1,7 @@
 # orca_parser
-A python module to parse data out of ORCA output files
+A python module to parse data out of comp. chem. (originally just ORCA) output files
 
-This module is availible at: https://pypi.org/project/orca-parser/
-and can be installed *via* 
+This module is availible at: [PyPi](https://pypi.org/project/orca-parser/) & [github](https://github.com/avanteijlingen/orca_parser) and can be installed *via* 
 
 ```bash
 pip install orca-parser
@@ -23,9 +22,6 @@ print("Final coordinates:")
 print(Optimization.coords[-1])
 ```
 
-
-### Requirements:
-[ase](https://gitlab.com/ase/ase), numpy, pandas
 
 # Orca parser contains different classes for different types of QM output:
 

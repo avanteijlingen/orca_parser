@@ -136,16 +136,6 @@ class ORCAParse:
         pass
 
     def parse(self):
-        self.orca_version = self.raw.split("Program Version ")[1].split()[0]
-        if "Global Optimization Algorithm" in self.raw:
-            self.GOAT = True
-        else:
-            self.GOAT = False
-        if "xtb is free software" in self.raw:
-            self.XTB = True
-        else:
-            self.XTB = False
-
         if self.XTB:
             self.Z = float(self.raw.split(":: total charge")[1].split("e")[0])
             self.orca_version = self.raw.split("Program Version ")[1].split()[0]
@@ -415,8 +405,18 @@ class ORCAParse:
                 )[0]
             )
 
-        inp = self.raw.split("INPUT FILE")[1].split("****END OF INPUT****")[0]
-        inp = inp.split("|  1> !")[1].split("\n")[0]
+        # the "!" keyword line is not necessarily the first line of the input
+        inp_block = self.raw.split("INPUT FILE")[1].split("****END OF INPUT****")[0]
+        inp = None
+        for line in inp_block.split("\n"):
+            if not line.lstrip().startswith("|") or ">" not in line:
+                continue
+            content = line.split(">", 1)[1].strip()
+            if content.startswith("!"):
+                inp = content.lstrip("!").strip()
+                break
+        if inp is None:
+            raise ValueError(f"No keyword line (!) found in input echo of {self.fname}")
         self.input_line = inp.split()
         inp = inp.upper()
         inp = inp.replace("!", "")
@@ -436,7 +436,7 @@ class ORCAParse:
             "Multiplicity": self.Multiplicity,
             "version": self.orca_version,
             "software": "ORCA",
-            "UKS": "UKS" in self.raw.split("|  1>")[1].split("\n")[0],
+            "UKS": "UKS" in inp,
             "ECP": "ECP gradient" in self.raw,
         }
 
@@ -623,6 +623,12 @@ class ORCAParse:
             return None
         self.ValidateOutput()
         self.convergence()
+        self.GOAT = "Global Optimization Algorithm" in self.raw
+        self.XTB = "xtb is free software" in self.raw
+        if "Program Version " in self.raw:
+            self.orca_version = self.raw.split("Program Version ")[1].split()[0]
+        else:
+            self.orca_version = None
         self.TDDFT = False
         self.coords = []
         self.atoms = []

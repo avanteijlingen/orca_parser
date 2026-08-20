@@ -44,12 +44,10 @@ class NWChemParse(ORCAParse):
         return "COSMO-SMD solvation results" in self.raw
 
     def get_functional(self):
-        if "MN15 Method XC Functional" in self.raw:
-            return "MN15"
-        elif "PBE0 Method XC Functional" in self.raw:
-            return "PBE0"
-        else:
-            return None
+        for line in self.raw.split("\n"):
+            if "Method XC Functional" in line:
+                return line.split()[0]
+        return None
 
     def get_basis_sets(self):
         self.RaBasis = None
@@ -135,8 +133,12 @@ class NWChemParse(ORCAParse):
                 if len(line) != 4:
                     continue
                 element, x, y, z = line
+                try:
+                    xyz = np.array([float(x), float(y), float(z)]).reshape(1, 3)
+                except ValueError:
+                    # table rulers etc. can also have 4 fields, skip them
+                    continue
                 self.atoms.append(element)
-                xyz = np.array([float(x), float(y), float(z)]).reshape(1, 3)
                 positions = np.vstack((positions, xyz))
             self.coords.append(positions)
 
